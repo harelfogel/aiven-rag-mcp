@@ -1,0 +1,27 @@
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+
+# secrets and local config
+.env
+.claude/settings.local.json
+
+# local-only coaching skill, never shipped
+.claude/skills/explain-like-harel/
+
+# data folder is mounted into the container; keep the folder, not the content
+data/*
+!data/.gitkeep
+
+# private material that must never land here
+*.pdf
+*.pptx
+aiven-assignment-agent-prompt.md
+
+# local handoff notes
+CLAUDE.local.md
