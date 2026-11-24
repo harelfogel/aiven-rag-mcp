@@ -1,8 +1,13 @@
-"""Every string a model reads: server instructions, tool descriptions and argument docs.
+"""Every string a model reads: tool names, titles, descriptions, argument docs, instructions.
 
 They are written for Claude, not for people: each says what the tool returns and when to use it.
 Nothing else in the code base holds tool-facing prose.
 """
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from enum import StrEnum
 
 SERVER_NAME = "aiven-docs-rag"
 
@@ -13,27 +18,43 @@ SERVER_INSTRUCTIONS = (
     "and `ingest` to add more text, a file or a web page."
 )
 
-SEARCH_DESCRIPTION = (
-    "Find the documentation chunks most relevant to a question. Returns up to top_k chunks, best "
-    "first, each with its page title, heading path, text, source and a link for citation. Use "
-    "mode=hybrid (default) for most questions; mode=keyword for an exact parameter name or error "
-    "string; mode=vector for a question phrased in different words than the docs. An empty hits "
-    "list means nothing matched; say so instead of guessing."
-)
 
-INGEST_DESCRIPTION = (
-    "Add one document to the knowledge base. kind=text takes the text itself, kind=file takes a "
-    "path to a .rst or .md file inside the server's data folder, kind=url takes an http(s) page "
-    "that is plain text, Markdown, RST or HTML. Safe to repeat: unchanged content reports "
-    "'unchanged' and changed content replaces the earlier version. Returns the source id, how "
-    "many chunks it became and whether it was ingested or unchanged."
-)
+class ToolName(StrEnum):
+    SEARCH = "search"
+    INGEST = "ingest"
+    LIST_SOURCES = "list_sources"
 
-LIST_SOURCES_DESCRIPTION = (
-    "List what has been ingested, newest first, with totals. Returns total_sources, total_chunks "
-    "and one page of sources (uri, title, kind, chunk count, ingest time). Page with offset when "
-    "total_sources is larger than the page."
-)
+
+@dataclass(frozen=True)
+class ToolText:
+    title: str
+    description: str
+
+
+TOOL_TEXT: dict[ToolName, ToolText] = {
+    ToolName.SEARCH: ToolText(
+        "Search the documentation",
+        "Find the documentation chunks most relevant to a question. Returns up to top_k chunks, "
+        "best first, each with its page title, heading path, text, source and a link for citation. "
+        "Use mode=hybrid (default) for most questions; mode=keyword for an exact parameter name or "
+        "error string; mode=vector for a question phrased in different words than the docs. An "
+        "empty hits list means nothing matched; say so instead of guessing.",
+    ),
+    ToolName.INGEST: ToolText(
+        "Add a document",
+        "Add one document to the knowledge base. kind=text takes the text itself, kind=file takes "
+        "a path to a .rst or .md file inside the server's data folder, kind=url takes an http(s) "
+        "page that is plain text, Markdown, RST or HTML. Safe to repeat: unchanged content reports "
+        "'unchanged' and changed content replaces the earlier version. Returns the source id, how "
+        "many chunks it became and whether it was ingested or unchanged.",
+    ),
+    ToolName.LIST_SOURCES: ToolText(
+        "List ingested sources",
+        "List what has been ingested, newest first, with totals. Returns total_sources, "
+        "total_chunks and one page of sources (uri, title, kind, chunk count, ingest time). Page "
+        "with offset when total_sources is larger than the page.",
+    ),
+}
 
 QUERY_DOC = "The question or keywords to look for, in plain language."
 TOP_K_DOC = "How many chunks to return."

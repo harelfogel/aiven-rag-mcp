@@ -6,8 +6,9 @@ import pytest
 from mcp.client import Client
 from psycopg_pool import ConnectionPool
 
+from rag_mcp.prompts import TOOL_TEXT, ToolName
 from rag_mcp.settings import Settings
-from rag_mcp.tools import build_server
+from rag_mcp.tools import TOOL_SPECS, build_server
 from tests.conftest import FakeEmbedder
 
 pytestmark = [pytest.mark.integration, pytest.mark.anyio]
@@ -31,13 +32,15 @@ def client(settings: Settings, pool: ConnectionPool, fake_embedder: FakeEmbedder
 async def test_exactly_three_tools_with_bounded_schemas(client: Client) -> None:
     async with client:
         tools = {tool.name: tool for tool in (await client.list_tools()).tools}
-    assert set(tools) == {"ingest", "search", "list_sources"}
+    assert set(tools) == {name.value for name in ToolName} == {"ingest", "search", "list_sources"}
     schema = tools["search"].input_schema
     top_k = schema["properties"]["top_k"]
     assert (top_k["minimum"], top_k["maximum"]) == (1, 20)
     assert set(schema["$defs"]["SearchMode"]["enum"]) == {"hybrid", "vector", "keyword"}
     assert tools["ingest"].input_schema["required"] == ["source", "kind"]
-    assert all(tool.description for tool in tools.values())
+    for spec in TOOL_SPECS:  # the model sees exactly the text in prompts.py
+        assert tools[spec.name.value].description == TOOL_TEXT[spec.name].description
+        assert tools[spec.name.value].title == TOOL_TEXT[spec.name].title
 
 
 async def test_ingest_search_and_list_round_trip(client: Client) -> None:
