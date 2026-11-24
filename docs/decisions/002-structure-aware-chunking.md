@@ -21,7 +21,9 @@ repeated in every piece, so each row stays reachable by vector search instead of
 512 tokens. The heading path is stored once as a column and prepended only at embed and index time.
 
 ## Consequences
-- Measured on the corpus (word counts as a stand-in for tokens): 788 pages, 3,063 chunks,
-  median 95 words, 90th percentile 228, parse and chunk in under a second.
+- Measured on the corpus with the model's own tokenizer: 788 pages, 3,807 chunks, 712k tokens,
+  median 151 tokens, 90th percentile 374, maximum 510, none over the 512 window.
+- Table border lines (`+----+`, `=====`) are dropped at parse time: a row of 80 dashes is 75
+  tokens of nothing, and left in place it pushed a grid table's header alone to ~500 tokens.
 - Cost: ~450 lines of parser and chunker with their own edge cases; malformed RST degrades to
   paragraphs rather than failing. For a plain-prose corpus fixed windows would have been enough.

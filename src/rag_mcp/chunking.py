@@ -99,15 +99,12 @@ def split_oversized(block: Block, count_tokens: TokenCounter, limit: int) -> lis
 
 
 def _table_header_rows(lines: list[str]) -> int:
-    """Header lines of a pipe, grid or simple table, or 0 when it has none."""
-    first = lines[0].lstrip()
-    if first.startswith("|"):
-        has_rule = len(lines) > 1 and lines[1].lstrip().startswith("|") and "---" in lines[1]
-        return 2 if has_rule else 0
-    if first.startswith("+"):
-        return next((i + 1 for i, line in enumerate(lines) if line.lstrip().startswith("+=")), 0)
-    borders = [i for i, line in enumerate(lines) if line.strip().startswith("=")]
-    return borders[1] + 1 if len(borders) >= 3 else 0
+    """Header lines of a pipe table (a header row followed by a `|---|` rule), else 0.
+    RST grid and simple tables arrive in this form too: the parser strips their borders."""
+    if len(lines) < 2 or not lines[0].lstrip().startswith("|"):
+        return 0
+    rule = lines[1].strip()
+    return 2 if rule.startswith("|") and "---" in rule else 0
 
 
 def _overlaps(last: Block, last_size: int, next_size: int, budget: int) -> bool:

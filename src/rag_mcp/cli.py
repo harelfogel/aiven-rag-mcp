@@ -2,6 +2,7 @@
 
 `up` is the container's main process: apply the schema, then idle. Claude Code starts the
 MCP server itself with `docker exec -i rag-mcp rag-mcp serve` (arrives in M5).
+`ingest PATH` walks a folder under the data root and reports what changed.
 """
 
 from __future__ import annotations
@@ -10,10 +11,15 @@ import argparse
 import logging
 import signal
 import sys
+from pathlib import Path
 
-from psycopg_pool import PoolTimeout
+import psycopg
+from psycopg_pool import ConnectionPool, PoolTimeout
 
 from rag_mcp import db
+from rag_mcp.embedding import FastEmbedEmbedder
+from rag_mcp.errors import RagError
+from rag_mcp.ingest import IngestPipeline, ingest_tree
 from rag_mcp.settings import Settings, SettingsError
 
 log = logging.getLogger("rag_mcp")
@@ -24,6 +30,10 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("up", help="apply the schema, then idle for `docker exec`")
     sub.add_parser("init-db", help="apply the schema and exit")
+    ingest = sub.add_parser(
+        "ingest", help="ingest every .rst/.md under PATH (inside the data root)"
+    )
+    ingest.add_argument("path", type=Path)
     args = parser.parse_args(argv)
 
     _configure_logging("INFO")
@@ -43,10 +53,45 @@ def main(argv: list[str] | None = None) -> int:
         log.error("%s", exc)
         return 1
 
+    exit_code = 0
     if args.command == "up":
         _idle()
+    elif args.command == "ingest":
+        exit_code = _ingest(settings, pool, args.path)
     pool.close()
-    return 0
+    return exit_code
+
+
+def _ingest(settings: Settings, pool: ConnectionPool, path: Path) -> int:
+    embedder = FastEmbedEmbedder.from_settings(settings)
+    pipeline = IngestPipeline.from_settings(settings, pool, embedder)
+    data_root = pipeline.limits.data_root
+    root = (path if path.is_absolute() else data_root / path).resolve()
+    if not root.is_relative_to(data_root) or not root.exists():
+        log.error("PATH must exist under the data root %s, got %s", data_root, path)
+        return 2
+
+    def report(done: int, total: int) -> None:
+        log.info("ingest progress %d/%d", done, total)
+
+    try:
+        summary = ingest_tree(pipeline, root, report=report)
+    except RagError as error:
+        log.error("%s", error)
+        return 1
+    except psycopg.Error as error:  # the database went away mid-run; the last source rolled back
+        log.error("database error, ingest stopped: %s", error)
+        return 1
+    log.info(
+        "ingest done: %d ingested, %d unchanged, %d failed, %d new chunks in %.1fs (%.1f chunks/s)",
+        summary.ingested,
+        summary.unchanged,
+        summary.failed,
+        summary.chunks,
+        summary.seconds,
+        summary.chunks / summary.seconds if summary.seconds else 0.0,
+    )
+    return 0 if summary.total and summary.failed < summary.total else 1
 
 
 def _configure_logging(level: str) -> None:

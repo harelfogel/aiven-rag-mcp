@@ -24,6 +24,8 @@ class Settings:
     db_connect_timeout_s: float = 60.0
     embedding_model: str = "BAAI/bge-small-en-v1.5"
     embedding_dim: int = 384
+    embedding_cache_dir: str = ""  # empty = fastembed's default cache
+    embed_batch_size: int = 64
     chunk_target_tokens: int = 400
     chunk_max_tokens: int = 512
     chunk_min_tokens: int = 30
@@ -51,6 +53,8 @@ class Settings:
             ),
             embedding_model=_text(env, "EMBEDDING_MODEL", cls.embedding_model),
             embedding_dim=_number(env, "EMBEDDING_DIM", cls.embedding_dim, int, minimum=1),
+            embedding_cache_dir=_text(env, "EMBEDDING_CACHE_DIR", cls.embedding_cache_dir),
+            embed_batch_size=_number(env, "EMBED_BATCH_SIZE", cls.embed_batch_size, int, minimum=1),
             chunk_target_tokens=_number(
                 env, "CHUNK_TARGET_TOKENS", cls.chunk_target_tokens, int, minimum=1
             ),

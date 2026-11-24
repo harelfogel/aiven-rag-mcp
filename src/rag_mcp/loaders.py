@@ -53,6 +53,7 @@ class LoadedSource:
     title: str
     text: str
     fmt: Format
+    local_path: Path | None = None  # set for files; include targets resolve relative to it
 
 
 Fetcher = Callable[[str, FetchLimits], HttpResponse]
@@ -97,7 +98,7 @@ def load_file(path_text: str, title: str | None, limits: LoadLimits) -> LoadedSo
             Code.BAD_REQUEST, f"cannot read {path_text!r}: {error.strerror}"
         ) from error
     relative = PurePosixPath(path.relative_to(limits.data_root))
-    return LoadedSource(f"file:{relative}", title or path.stem, _decode(raw, path_text), fmt)
+    return LoadedSource(f"file:{relative}", title or path.stem, _decode(raw, path_text), fmt, path)
 
 
 def load_url(

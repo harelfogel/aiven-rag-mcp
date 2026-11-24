@@ -164,9 +164,10 @@ def test_simple_and_grid_tables_are_single_blocks() -> None:
         +---+---+
         """
     )
-    kinds = [b.kind for b in doc.sections[0].blocks]
-    assert kinds == [BlockKind.TABLE, BlockKind.TABLE]
-    assert "PORT    port" in doc.sections[0].blocks[0].text
+    simple, grid = doc.sections[0].blocks
+    assert (simple.kind, grid.kind) == (BlockKind.TABLE, BlockKind.TABLE)
+    assert simple.text == "Var     Desc\nHOST    host\nPORT    port"  # borders dropped
+    assert grid.text == "| a | b |"
 
 
 def test_inline_markup_is_cleaned() -> None:
@@ -238,3 +239,27 @@ def test_malformed_option_and_substitution_line_do_not_break_parsing() -> None:
     kinds = [b.kind for b in doc.sections[0].blocks]
     assert kinds == [BlockKind.PARAGRAPH, BlockKind.TABLE]
     assert doc.sections[0].blocks[1].text == "| a | b |"
+
+
+def test_grid_table_header_rule_becomes_a_pipe_rule() -> None:
+    doc = parse(
+        """
+        Top
+        ===
+
+        +--------+-----------+
+        | Backup | Retention |
+        +========+===========+
+        | daily  | 2 days    |
+        +--------+-----------+
+        | hourly | 1 day     |
+        +--------+-----------+
+        """
+    )
+    (table,) = doc.sections[0].blocks
+    assert table.text.splitlines() == [
+        "| Backup | Retention |",
+        "|--------|-----------|",
+        "| daily  | 2 days    |",
+        "| hourly | 1 day     |",
+    ]

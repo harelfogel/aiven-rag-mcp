@@ -18,6 +18,8 @@ _DIRECTIVE = re.compile(r"^(\s*)\.\. ([a-zA-Z][\w-]*)::\s*(.*)$")
 _COMMENT_OR_TARGET = re.compile(r"^\s*\.\.(\s|$)")
 _SIMPLE_TABLE_BORDER = re.compile(r"^=+(\s+=+)+\s*$")
 _GRID_TABLE_START = re.compile(r"^\s*\+-")
+_GRID_BORDER = re.compile(r"^\s*\+[-+]*\+?\s*$")
+_GRID_HEADER_RULE = re.compile(r"^\s*\+[=+]*\+?\s*$")
 
 _CODE_DIRECTIVES = frozenset({"code", "code-block", "sourcecode"})
 _ADMONITIONS = frozenset(
@@ -104,7 +106,7 @@ def parse_blocks(lines: list[str]) -> list[Block]:
             _, index = _take_indented(lines, index + 1, _indent_of(line))
         elif _SIMPLE_TABLE_BORDER.match(line.strip()) or _GRID_TABLE_START.match(line):
             table, index = _take_until_blank(lines, index)
-            blocks.append(Block(BlockKind.TABLE, "\n".join(table)))
+            blocks.append(Block(BlockKind.TABLE, "\n".join(_strip_table_borders(table))))
         else:
             paragraph, index = _take_until_blank(lines, index)
             blocks.extend(_paragraph_blocks(paragraph))
@@ -113,6 +115,20 @@ def parse_blocks(lines: list[str]) -> list[Block]:
                 if code:
                     blocks.append(Block(BlockKind.CODE, "\n".join(code)))
     return blocks
+
+
+def _strip_table_borders(lines: list[str]) -> list[str]:
+    """Drop grid and simple-table border lines: a row of 80 dashes is 75 tokens of nothing.
+    The grid header rule (`+===+`) becomes a pipe-table rule so the header stays detectable."""
+    kept: list[str] = []
+    for line in lines:
+        if _GRID_BORDER.match(line) or _SIMPLE_TABLE_BORDER.match(line.strip()):
+            continue
+        if _GRID_HEADER_RULE.match(line):
+            kept.append(line.strip().replace("+", "|").replace("=", "-"))
+        else:
+            kept.append(line.strip())
+    return kept
 
 
 def _paragraph_blocks(lines: list[str]) -> list[Block]:

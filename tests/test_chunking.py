@@ -56,13 +56,13 @@ def test_code_wider_than_the_window_splits_by_lines(config: ChunkConfig) -> None
 
 
 def test_giant_table_pieces_repeat_the_header() -> None:
-    grid = ["+---+---+", "| m | d |", "+===+===+"] + [f"| r{i} | x |" for i in range(6)]
-    pieces = split_oversized(Block(BlockKind.TABLE, "\n".join(grid)), word_count, 20)
-    assert len(pieces) > 1
-    assert all(p.text.startswith("+---+---+\n| m | d |\n+===+===+\n| r") for p in pieces)
     pipe = ["| a | b |", "|---|---|"] + [f"| {i} | y |" for i in range(6)]
     pieces = split_oversized(Block(BlockKind.TABLE, "\n".join(pipe)), word_count, 12)
+    assert len(pieces) > 1
     assert all(p.text.startswith("| a | b |\n|---|---|\n| ") for p in pieces)
+    headerless = [f"| {i} | y |" for i in range(6)]
+    pieces = split_oversized(Block(BlockKind.TABLE, "\n".join(headerless)), word_count, 6)
+    assert "\n".join(p.text for p in pieces) == "\n".join(headerless)
 
 
 def test_tiny_sections_merge_under_shared_prefix(config: ChunkConfig) -> None:

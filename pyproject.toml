@@ -2,8 +2,9 @@
 name = "rag-mcp"
 version = "0.1.0"
 description = "RAG MCP server over the Aiven devportal: ingest, hybrid search, list_sources"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.14"
 dependencies = [
+    "fastembed>=0.9",
     "mcp>=2.3,<3",
     "psycopg[binary,pool]>=3.2",
 ]
@@ -19,9 +20,11 @@ dev = [
 ]
 
 [tool.uv]
-# cryptography >= 49 ships no macOS wheel for Intel Macs and needs a Rust toolchain to build.
-# It is only pulled in by mcp -> pyjwt[crypto]; 48.x has the same API and prebuilt wheels everywhere.
-constraint-dependencies = ["cryptography<49"]
+# Two transitive packages dropped Intel-Mac wheels; the pinned versions have wheels on every
+# platform we build for, and one lockfile then works on the dev Mac and in the Linux image.
+#   cryptography >= 49 (via mcp -> pyjwt[crypto]) needs a Rust toolchain to build from source.
+#   onnxruntime >= 1.24 (via fastembed) has no macOS x86_64 wheel at all.
+constraint-dependencies = ["cryptography<49", "onnxruntime<1.24"]
 
 [build-system]
 requires = ["hatchling"]

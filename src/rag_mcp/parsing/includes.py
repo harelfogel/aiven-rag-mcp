@@ -32,18 +32,25 @@ def expand_includes(text: str, resolve: IncludeResolver, depth: int = 0) -> str:
     return _INCLUDE.sub(replace, text)
 
 
-def file_include_resolver(root: Path, source: Path) -> IncludeResolver:
-    """Resolve relative to `source`, or to `root` for `/absolute` targets; never outside root."""
+def file_include_resolver(
+    root: Path, source: Path, max_bytes: int | None = None, *, project_root: Path | None = None
+) -> IncludeResolver:
+    """Resolve relative to `source`, or to `project_root` (the Sphinx source dir, where
+    `conf.py` lives) for `/absolute` targets. Nothing outside `root` is ever read."""
     root = root.resolve()
+    absolute_base = (project_root or root).resolve()
 
     def resolve(target: str) -> str | None:
-        base = root if target.startswith("/") else source.parent
+        base = absolute_base if target.startswith("/") else source.parent
         candidate = (base / target.lstrip("/")).resolve()
         if not candidate.is_relative_to(root):
             log.warning("include %s escapes %s; skipped", target, root)
             return None
         if not candidate.is_file():
             log.warning("include %s not found (from %s); skipped", target, source)
+            return None
+        if max_bytes is not None and candidate.stat().st_size > max_bytes:
+            log.warning("include %s exceeds %d bytes; skipped", target, max_bytes)
             return None
         return candidate.read_text(encoding="utf-8", errors="replace")
 

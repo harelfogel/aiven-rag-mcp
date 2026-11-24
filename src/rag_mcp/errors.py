@@ -10,6 +10,7 @@ class Code(StrEnum):
     NOT_FOUND = "not_found"
     TOO_LARGE = "too_large"
     UNREACHABLE = "unreachable"  # network or DNS failed; retrying later may help
+    EMBEDDING_FAILED = "embedding_failed"
     INTERNAL = "internal"
 
 

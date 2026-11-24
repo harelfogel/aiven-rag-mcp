@@ -16,7 +16,10 @@ services:
       retries: 12
 
   server:
-    build: .
+    build:
+      context: .
+      args:
+        EMBEDDING_MODEL: ${EMBEDDING_MODEL:-BAAI/bge-small-en-v1.5}
     container_name: rag-mcp   # fixed name so the MCP config can say `docker exec -i rag-mcp ...`
     depends_on:
       db:
