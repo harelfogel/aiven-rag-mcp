@@ -9,9 +9,9 @@ import pytest
 from psycopg import sql
 from psycopg_pool import ConnectionPool
 
-from rag_mcp import db
 from rag_mcp.chunking import ChunkConfig
 from rag_mcp.settings import Settings
+from rag_mcp.storage import db
 
 DEVPORTAL = Path(__file__).resolve().parent.parent / "data" / "devportal"
 

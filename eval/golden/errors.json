@@ -1,0 +1,56 @@
+[
+ {
+  "id": "error-not-leader-for-partition",
+  "kind": "error",
+  "question": "NotLeaderForPartitionException error in produce request",
+  "expected": [
+   "docs/products/kafka/concepts/non-leader-for-partition.rst"
+  ],
+  "term": "NotLeaderForPartitionException"
+ },
+ {
+  "id": "error-failed-to-update-metadata",
+  "kind": "error",
+  "question": "Failed to update metadata after 60.0 secs",
+  "expected": [
+   "docs/products/kafka/howto/create-topics-automatically.rst"
+  ],
+  "term": "Failed to update metadata"
+ },
+ {
+  "id": "error-replication-slot-active",
+  "kind": "error",
+  "question": "ERROR: replication slot is active for PID",
+  "expected": [
+   "docs/products/kafka/kafka-connect/howto/debezium-source-connector-pg-node-replacement.rst"
+  ],
+  "term": "is active for PID"
+ },
+ {
+  "id": "error-superuser-publication",
+  "kind": "error",
+  "question": "must be superuser to create FOR ALL TABLES publication",
+  "expected": [
+   "docs/products/kafka/kafka-connect/howto/debezium-source-connector-pg.rst"
+  ],
+  "term": "FOR ALL TABLES publication"
+ },
+ {
+  "id": "error-owner-of-extension",
+  "kind": "error",
+  "question": "ERROR: must be owner of extension",
+  "expected": [
+   "docs/products/postgresql/howto/migrate-pg-dump-restore.rst"
+  ],
+  "term": "must be owner of extension"
+ },
+ {
+  "id": "error-member-of-role-terminated",
+  "kind": "error",
+  "question": "must be a member of the role whose process is being terminated or member of pg_signal_backend",
+  "expected": [
+   "docs/products/postgresql/howto/pg-long-running-queries.rst"
+  ],
+  "term": "pg_signal_backend"
+ }
+]

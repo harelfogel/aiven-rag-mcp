@@ -12,15 +12,15 @@ from pathlib import Path
 
 from psycopg_pool import ConnectionPool
 
-from rag_mcp import repository
 from rag_mcp.chunking import Chunk, ChunkConfig, chunk_document, embed_text
 from rag_mcp.embedding import Embedder
 from rag_mcp.errors import RagError
-from rag_mcp.loaders import LoadedSource, LoadLimits, SourceKind, load
+from rag_mcp.loading.loaders import LoadedSource, LoadLimits, SourceKind, load
 from rag_mcp.parsing import Format, parse
 from rag_mcp.parsing.includes import expand_includes, file_include_resolver
-from rag_mcp.repository import ChunkRow
 from rag_mcp.settings import Settings
+from rag_mcp.storage import repository
+from rag_mcp.storage.repository import ChunkRow
 
 log = logging.getLogger(__name__)
 HEADING_JOIN = " > "

@@ -8,11 +8,11 @@ from enum import StrEnum
 
 from psycopg_pool import ConnectionPool
 
-from rag_mcp import repository
 from rag_mcp.embedding import Embedder
 from rag_mcp.errors import Code, RagError
-from rag_mcp.repository import ChunkHit
 from rag_mcp.settings import Settings
+from rag_mcp.storage import repository
+from rag_mcp.storage.repository import ChunkHit
 
 
 class SearchError(RagError):

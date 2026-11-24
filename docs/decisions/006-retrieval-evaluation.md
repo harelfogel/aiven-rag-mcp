@@ -5,7 +5,7 @@
 live in specific pages. Opinions about chunking and fusion are cheap; a table is not.
 
 ## Method
-`eval/golden.json` holds 50 questions, each naming the page or pages that answer it: 8 configuration
+`eval/golden/` holds 50 questions, one JSON file per kind, each naming the page or pages that answer it: 8 configuration
 parameters, 8 limits, 18 how-to steps, 10 bare identifiers (`retention.ms`, `pg_stat_statements`),
 6 exact error strings copied from page bodies. Every expected page was checked to be indexed and
 to contain the key term. `rag-mcp eval` runs each question through each variant with `top_k` 20,

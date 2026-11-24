@@ -1,8 +1,6 @@
 ---
 paths:
-  - "src/rag_mcp/server.py"
-  - "src/rag_mcp/tools.py"
-  - "src/rag_mcp/prompts.py"
+  - "src/rag_mcp/server/**/*.py"
   - "src/rag_mcp/cli.py"
 ---
 

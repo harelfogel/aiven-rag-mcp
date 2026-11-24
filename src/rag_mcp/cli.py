@@ -17,14 +17,16 @@ from pathlib import Path
 import psycopg
 from psycopg_pool import ConnectionPool, PoolTimeout
 
-from rag_mcp import db, repository
 from rag_mcp.embedding import FastEmbedEmbedder
 from rag_mcp.errors import RagError
-from rag_mcp.evaluate import evaluate, load_golden, render_markdown
+from rag_mcp.evaluation.golden import load_golden
+from rag_mcp.evaluation.report import render_markdown
+from rag_mcp.evaluation.runner import evaluate
 from rag_mcp.ingest import IngestPipeline, ingest_tree
 from rag_mcp.search import SearchConfig
+from rag_mcp.server.tools import build_server
 from rag_mcp.settings import Settings, SettingsError
-from rag_mcp.tools import build_server
+from rag_mcp.storage import db, repository
 
 log = logging.getLogger("rag_mcp")
 
@@ -36,7 +38,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("init-db", help="apply the schema and exit")
     sub.add_parser("serve", help="run the MCP server on stdio (launched by Claude Code)")
     evaluation = sub.add_parser("eval", help="score retrieval on a golden set; markdown to stdout")
-    evaluation.add_argument("golden", type=Path, nargs="?", default=Path("eval/golden.json"))
+    evaluation.add_argument("golden", type=Path, nargs="?", default=Path("eval/golden"))
     evaluation.add_argument("--repeats", type=int, default=3, help="timing runs per question")
     ingest = sub.add_parser(
         "ingest", help="ingest every .rst/.md under PATH (inside the data root)"

@@ -14,8 +14,8 @@ from pathlib import Path, PurePosixPath
 from urllib.parse import urlsplit
 
 from rag_mcp.errors import Code, RagError
-from rag_mcp.fetching import FetchLimits, HttpResponse, fetch_url
-from rag_mcp.html_text import html_to_text
+from rag_mcp.loading.fetching import FetchLimits, HttpResponse, fetch_url
+from rag_mcp.loading.html_text import html_to_text
 from rag_mcp.parsing import Format, format_for_path
 from rag_mcp.settings import Settings
 

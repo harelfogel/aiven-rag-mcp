@@ -1,0 +1,164 @@
+[
+ {
+  "id": "howto-kafka-cli-topic-retention",
+  "kind": "howto",
+  "question": "Using kafka-topics.sh, how do I create a topic with a retention time of 30 minutes?",
+  "expected": [
+   "docs/products/kafka/howto/configure-with-kafka-cli.rst"
+  ],
+  "term": "retention.ms"
+ },
+ {
+  "id": "howto-kafka-change-retention",
+  "kind": "howto",
+  "question": "How do I change the data retention period of a Kafka topic in the Aiven Console?",
+  "expected": [
+   "docs/products/kafka/howto/change-retention-period.rst"
+  ],
+  "term": "retention"
+ },
+ {
+  "id": "howto-pg-read-replica",
+  "kind": "howto",
+  "question": "How do I create a read-only replica for my PostgreSQL service?",
+  "expected": [
+   "docs/products/postgresql/howto/create-read-replica.rst"
+  ],
+  "term": "replica"
+ },
+ {
+  "id": "howto-ca-cert",
+  "kind": "howto",
+  "question": "Where do I download the CA certificate for my Aiven service?",
+  "expected": [
+   "docs/platform/howto/download-ca-cert.rst"
+  ],
+  "term": "CA certificate"
+ },
+ {
+  "id": "howto-auth-token",
+  "kind": "howto",
+  "question": "How do I create an authentication token for the Aiven API?",
+  "expected": [
+   "docs/platform/howto/create_authentication_token.rst"
+  ],
+  "term": "token"
+ },
+ {
+  "id": "howto-add-storage",
+  "kind": "howto",
+  "question": "How do I add more disk space to a running Aiven service without changing plan?",
+  "expected": [
+   "docs/platform/howto/add-storage-space.rst"
+  ],
+  "term": "storage"
+ },
+ {
+  "id": "howto-kafka-acls",
+  "kind": "howto",
+  "question": "How do I manage access control lists for Kafka topics on Aiven?",
+  "expected": [
+   "docs/products/kafka/howto/manage-acls.rst"
+  ],
+  "term": "ACL"
+ },
+ {
+  "id": "howto-kafka-sasl",
+  "kind": "howto",
+  "question": "How do I enable SASL authentication for Aiven for Apache Kafka?",
+  "expected": [
+   "docs/products/kafka/howto/kafka-sasl-auth.rst"
+  ],
+  "term": "SASL"
+ },
+ {
+  "id": "howto-pg-extensions",
+  "kind": "howto",
+  "question": "How do I install a PostgreSQL extension on an Aiven service?",
+  "expected": [
+   "docs/products/postgresql/howto/manage-extensions.rst"
+  ],
+  "term": "extension"
+ },
+ {
+  "id": "howto-pg-dump-restore",
+  "kind": "howto",
+  "question": "How do I migrate a database to Aiven for PostgreSQL with pg_dump and pg_restore?",
+  "expected": [
+   "docs/products/postgresql/howto/migrate-pg-dump-restore.rst"
+  ],
+  "term": "pg_dump"
+ },
+ {
+  "id": "howto-kcat",
+  "kind": "howto",
+  "question": "How do I use kcat to produce and consume messages from my Aiven Kafka service?",
+  "expected": [
+   "docs/products/kafka/howto/kcat.rst"
+  ],
+  "term": "kcat"
+ },
+ {
+  "id": "howto-clickhouse-cli",
+  "kind": "howto",
+  "question": "How do I connect to Aiven for ClickHouse with the clickhouse-client command line tool?",
+  "expected": [
+   "docs/products/clickhouse/howto/connect-with-clickhouse-cli.rst"
+  ],
+  "term": "clickhouse"
+ },
+ {
+  "id": "howto-opensearch-low-disk",
+  "kind": "howto",
+  "question": "My OpenSearch service is low on disk space, what should I do?",
+  "expected": [
+   "docs/products/opensearch/howto/handle-low-disk-space.rst"
+  ],
+  "term": "disk"
+ },
+ {
+  "id": "howto-keystore",
+  "kind": "howto",
+  "question": "How do I create a Java keystore and truststore for connecting to Aiven for Apache Kafka?",
+  "expected": [
+   "docs/products/kafka/howto/keystore-truststore.rst"
+  ],
+  "term": "keystore"
+ },
+ {
+  "id": "howto-pg-slow-queries",
+  "kind": "howto",
+  "question": "How do I find slow queries in Aiven for PostgreSQL using pg_stat_statements?",
+  "expected": [
+   "docs/products/postgresql/howto/identify-pg-slow-queries.rst"
+  ],
+  "term": "pg_stat_statements"
+ },
+ {
+  "id": "howto-flink-sql-app",
+  "kind": "howto",
+  "question": "How do I create a SQL application in Aiven for Apache Flink?",
+  "expected": [
+   "docs/products/flink/howto/create-sql-application.rst"
+  ],
+  "term": "SQL"
+ },
+ {
+  "id": "howto-disk-autoscaler",
+  "kind": "howto",
+  "question": "How do I enable automatic disk autoscaling for an Aiven service?",
+  "expected": [
+   "docs/platform/howto/disk-autoscaler.rst"
+  ],
+  "term": "autoscal"
+ },
+ {
+  "id": "howto-redis-overcommit",
+  "kind": "howto",
+  "question": "Why does Aiven for Redis warn about overcommit_memory and what should I do about it?",
+  "expected": [
+   "docs/products/redis/howto/warning-overcommit_memory.rst"
+  ],
+  "term": "overcommit"
+ }
+]

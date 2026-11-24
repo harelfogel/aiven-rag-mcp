@@ -1,0 +1,75 @@
+[
+ {
+  "id": "limit-pg-connections-plan",
+  "kind": "limit",
+  "question": "What is the maximum number of connections for an Aiven for PostgreSQL service on a 4 GB plan?",
+  "expected": [
+   "docs/products/postgresql/reference/pg-connection-limits.rst"
+  ],
+  "term": "max_connections"
+ },
+ {
+  "id": "limit-mysql-connections",
+  "kind": "limit",
+  "question": "How many connections does an Aiven for MySQL service allow and how does it depend on RAM?",
+  "expected": [
+   "docs/products/mysql/concepts/max-number-of-connections.rst"
+  ],
+  "term": "max_connections"
+ },
+ {
+  "id": "limit-redis-connections",
+  "kind": "limit",
+  "question": "How do I estimate the maximum number of connections my Aiven for Redis service supports?",
+  "expected": [
+   "docs/products/redis/howto/estimate-max-number-of-connections.rst"
+  ],
+  "term": "connections"
+ },
+ {
+  "id": "limit-backup-retention",
+  "kind": "limit",
+  "question": "How long are backups kept for each Aiven service type?",
+  "expected": [
+   "docs/platform/concepts/service_backups.rst"
+  ],
+  "term": "backup"
+ },
+ {
+  "id": "limit-clickhouse",
+  "kind": "limit",
+  "question": "What are the known limitations of Aiven for ClickHouse?",
+  "expected": [
+   "docs/products/clickhouse/reference/limitations.rst"
+  ],
+  "term": "limitation"
+ },
+ {
+  "id": "limit-pg-idle-connections",
+  "kind": "limit",
+  "question": "What happens to idle connections in Aiven for PostgreSQL and after how long are they closed?",
+  "expected": [
+   "docs/products/postgresql/reference/idle-connections.rst"
+  ],
+  "term": "idle"
+ },
+ {
+  "id": "limit-oom",
+  "kind": "limit",
+  "question": "What happens when an Aiven service runs out of memory?",
+  "expected": [
+   "docs/platform/concepts/out-of-memory-conditions.rst",
+   "docs/platform/concepts/service-memory-limits.rst"
+  ],
+  "term": "memory"
+ },
+ {
+  "id": "limit-kafka-full-disk",
+  "kind": "limit",
+  "question": "What happens to an Aiven for Apache Kafka service when its disk fills up and how do I prevent it?",
+  "expected": [
+   "docs/products/kafka/howto/prevent-full-disks.rst"
+  ],
+  "term": "disk"
+ }
+]

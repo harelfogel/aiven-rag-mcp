@@ -6,10 +6,10 @@ from pathlib import Path
 import pytest
 from psycopg_pool import ConnectionPool
 
-from rag_mcp import repository
 from rag_mcp.ingest import IngestPipeline, IngestStatus, ingest_tree
-from rag_mcp.loaders import SourceKind
+from rag_mcp.loading.loaders import SourceKind
 from rag_mcp.settings import Settings
+from rag_mcp.storage import repository
 from tests.conftest import FakeEmbedder
 
 pytestmark = pytest.mark.integration

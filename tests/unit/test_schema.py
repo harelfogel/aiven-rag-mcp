@@ -1,4 +1,4 @@
-from rag_mcp.db import render_schema
+from rag_mcp.storage.db import render_schema
 
 
 def test_schema_renders_embedding_dim() -> None:

@@ -7,8 +7,8 @@ import psycopg
 import pytest
 from psycopg import Connection
 
-from rag_mcp.db import SchemaError, apply_schema
 from rag_mcp.settings import Settings
+from rag_mcp.storage.db import SchemaError, apply_schema
 
 pytestmark = pytest.mark.integration
 

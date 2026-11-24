@@ -4,9 +4,10 @@ paths:
   - "src/rag_mcp/chunking.py"
   - "src/rag_mcp/embedding.py"
   - "src/rag_mcp/ingest.py"
-  - "src/rag_mcp/loaders.py"
+  - "src/rag_mcp/loading/**/*.py"
   - "src/rag_mcp/search.py"
-  - "src/rag_mcp/repository.py"
+  - "src/rag_mcp/storage/repository.py"
+  - "src/rag_mcp/evaluation/**/*.py"
 ---
 
 # RAG pipeline

@@ -1,4 +1,4 @@
-from rag_mcp.html_text import html_to_text
+from rag_mcp.loading.html_text import html_to_text
 
 
 def test_html_to_text_keeps_blocks_drops_scripts_and_decodes_entities() -> None:

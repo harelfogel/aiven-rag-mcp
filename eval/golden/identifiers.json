@@ -1,0 +1,94 @@
+[
+ {
+  "id": "ident-message-max-bytes",
+  "kind": "identifier",
+  "question": "message_max_bytes",
+  "expected": [
+   "docs/products/kafka/reference/advanced-params.rst"
+  ],
+  "term": "message_max_bytes"
+ },
+ {
+  "id": "ident-log-retention-hours",
+  "kind": "identifier",
+  "question": "log_retention_hours",
+  "expected": [
+   "docs/products/kafka/reference/advanced-params.rst"
+  ],
+  "term": "log_retention_hours"
+ },
+ {
+  "id": "ident-redis-maxmemory",
+  "kind": "identifier",
+  "question": "redis_maxmemory_policy",
+  "expected": [
+   "docs/products/redis/reference/advanced-params.rst"
+  ],
+  "term": "redis_maxmemory_policy"
+ },
+ {
+  "id": "ident-idle-in-transaction",
+  "kind": "identifier",
+  "question": "idle_in_transaction_session_timeout",
+  "expected": [
+   "docs/products/postgresql/reference/advanced-params.rst"
+  ],
+  "term": "idle_in_transaction_session_timeout"
+ },
+ {
+  "id": "ident-retention-ms",
+  "kind": "identifier",
+  "question": "retention.ms kafka-topics.sh",
+  "expected": [
+   "docs/products/kafka/howto/configure-with-kafka-cli.rst"
+  ],
+  "term": "retention.ms"
+ },
+ {
+  "id": "ident-pg-stat-statements",
+  "kind": "identifier",
+  "question": "pg_stat_statements",
+  "expected": [
+   "docs/products/postgresql/howto/identify-pg-slow-queries.rst",
+   "docs/products/postgresql/howto/optimize-pg-slow-queries.rst"
+  ],
+  "term": "pg_stat_statements"
+ },
+ {
+  "id": "ident-statement-timeout",
+  "kind": "identifier",
+  "question": "statement_timeout",
+  "expected": [
+   "docs/products/postgresql/howto/pg-long-running-queries.rst"
+  ],
+  "term": "statement_timeout"
+ },
+ {
+  "id": "ident-overcommit-memory",
+  "kind": "identifier",
+  "question": "overcommit_memory",
+  "expected": [
+   "docs/products/redis/howto/warning-overcommit_memory.rst"
+  ],
+  "term": "overcommit"
+ },
+ {
+  "id": "ident-kafka-connect-private-access",
+  "kind": "identifier",
+  "question": "private_access kafka_connect",
+  "expected": [
+   "docs/products/kafka/reference/advanced-params.rst",
+   "docs/products/kafka/kafka-connect/reference/advanced-params.rst"
+  ],
+  "term": "kafka_connect"
+ },
+ {
+  "id": "ident-max-connections-pg",
+  "kind": "identifier",
+  "question": "max_connections postgresql plan",
+  "expected": [
+   "docs/products/postgresql/reference/pg-connection-limits.rst"
+  ],
+  "term": "max_connections"
+ }
+]

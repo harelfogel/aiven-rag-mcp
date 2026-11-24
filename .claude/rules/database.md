@@ -1,10 +1,9 @@
 ---
 paths:
-  - "src/rag_mcp/db.py"
-  - "src/rag_mcp/repository.py"
-  - "src/rag_mcp/schema.sql"
-  - "tests/test_db_integration.py"
-  - "tests/test_schema.py"
+  - "src/rag_mcp/storage/**"
+  - "tests/integration/test_db.py"
+  - "tests/integration/test_repository.py"
+  - "tests/unit/test_schema.py"
 ---
 
 # Database: ACID writes, index-backed reads

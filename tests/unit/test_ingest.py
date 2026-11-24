@@ -4,7 +4,6 @@ import hashlib
 from pathlib import Path
 
 from rag_mcp.chunking import ChunkConfig
-from rag_mcp.fetching import FetchLimits
 from rag_mcp.ingest import (
     PreparedSource,
     _documents_under,
@@ -13,7 +12,8 @@ from rag_mcp.ingest import (
     prepare_source,
     sphinx_project_root,
 )
-from rag_mcp.loaders import LoadedSource, LoadLimits, load_file
+from rag_mcp.loading.fetching import FetchLimits
+from rag_mcp.loading.loaders import LoadedSource, LoadLimits, load_file
 from tests.conftest import FakeEmbedder
 
 CHUNKING = ChunkConfig(target_tokens=40, max_tokens=50, min_tokens=6)

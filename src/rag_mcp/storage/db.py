@@ -44,7 +44,7 @@ def connect(settings: Settings) -> ConnectionPool:
 
 def render_schema(dim: int) -> sql.Composed:
     """Fill the embedding width into schema.sql. DDL cannot take bind parameters."""
-    text = resources.files("rag_mcp").joinpath("schema.sql").read_text()
+    text = resources.files("rag_mcp.storage").joinpath("schema.sql").read_text()
     return sql.SQL(text).format(dim=sql.Literal(dim))
 
 

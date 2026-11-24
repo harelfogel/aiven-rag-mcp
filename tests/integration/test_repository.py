@@ -6,8 +6,8 @@ from datetime import datetime
 import pytest
 from psycopg_pool import ConnectionPool
 
-from rag_mcp import repository
-from rag_mcp.repository import ChunkRow, vector_literal
+from rag_mcp.storage import repository
+from rag_mcp.storage.repository import ChunkRow, vector_literal
 
 pytestmark = pytest.mark.integration
 

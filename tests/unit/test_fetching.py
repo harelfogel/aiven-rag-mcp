@@ -5,7 +5,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import pytest
 
 from rag_mcp.errors import Code
-from rag_mcp.fetching import (
+from rag_mcp.loading.fetching import (
     FetchError,
     FetchLimits,
     HttpResponse,

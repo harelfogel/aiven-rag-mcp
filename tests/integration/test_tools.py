@@ -6,9 +6,9 @@ import pytest
 from mcp.client import Client
 from psycopg_pool import ConnectionPool
 
-from rag_mcp.prompts import TOOL_TEXT, ToolName
+from rag_mcp.server.prompts import TOOL_TEXT, ToolName
+from rag_mcp.server.tools import TOOL_SPECS, build_server
 from rag_mcp.settings import Settings
-from rag_mcp.tools import TOOL_SPECS, build_server
 from tests.conftest import FakeEmbedder
 
 pytestmark = [pytest.mark.integration, pytest.mark.anyio]
@@ -125,7 +125,7 @@ async def test_unexpected_failure_is_internal_hides_details_and_the_server_survi
 async def test_a_lost_database_is_a_coded_error_and_the_server_keeps_answering(
     settings: Settings, fake_embedder: FakeEmbedder
 ) -> None:
-    from rag_mcp import db
+    from rag_mcp.storage import db
 
     dying_pool = db.connect(settings)
     client = Client(build_server(settings, dying_pool, fake_embedder))

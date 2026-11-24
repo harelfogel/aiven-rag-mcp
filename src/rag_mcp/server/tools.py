@@ -19,14 +19,15 @@ from mcp.types import ToolAnnotations
 from psycopg_pool import ConnectionPool
 from pydantic import Field
 
-from rag_mcp import prompts, repository
-from rag_mcp.boundary import guarded
 from rag_mcp.embedding import Embedder
 from rag_mcp.ingest import IngestPipeline, IngestResult
-from rag_mcp.loaders import SourceKind
-from rag_mcp.prompts import ToolName
+from rag_mcp.loading.loaders import SourceKind
 from rag_mcp.search import SearchConfig, SearchMode, SearchResponse, search
+from rag_mcp.server import prompts
+from rag_mcp.server.boundary import guarded
+from rag_mcp.server.prompts import ToolName
 from rag_mcp.settings import Settings
+from rag_mcp.storage import repository
 
 READ_ONLY = ToolAnnotations(read_only_hint=True, destructive_hint=False, open_world_hint=False)
 # ingest replaces an earlier version of the same source; it never deletes unrelated data.

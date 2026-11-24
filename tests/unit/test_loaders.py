@@ -4,8 +4,8 @@ from pathlib import Path
 import pytest
 
 from rag_mcp.errors import Code, RagError
-from rag_mcp.fetching import FetchLimits, HttpResponse
-from rag_mcp.loaders import (
+from rag_mcp.loading.fetching import FetchLimits, HttpResponse
+from rag_mcp.loading.loaders import (
     LoaderError,
     LoadLimits,
     SourceKind,

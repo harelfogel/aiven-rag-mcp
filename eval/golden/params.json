@@ -1,0 +1,76 @@
+[
+ {
+  "id": "param-kafka-connect-private",
+  "kind": "param",
+  "question": "What does the kafka_connect option under private_access do on Aiven for Apache Kafka?",
+  "expected": [
+   "docs/products/kafka/reference/advanced-params.rst",
+   "docs/products/kafka/kafka-connect/reference/advanced-params.rst"
+  ],
+  "term": "kafka_connect"
+ },
+ {
+  "id": "param-kafka-message-max-bytes",
+  "kind": "param",
+  "question": "What is message_max_bytes in the Kafka advanced configuration?",
+  "expected": [
+   "docs/products/kafka/reference/advanced-params.rst"
+  ],
+  "term": "message_max_bytes"
+ },
+ {
+  "id": "param-kafka-log-retention-hours",
+  "kind": "param",
+  "question": "Which Kafka advanced parameter sets the number of hours to keep a log file before deleting it?",
+  "expected": [
+   "docs/products/kafka/reference/advanced-params.rst"
+  ],
+  "term": "log_retention_hours"
+ },
+ {
+  "id": "param-redis-maxmemory-policy",
+  "kind": "param",
+  "question": "How do I set the Redis maxmemory policy on Aiven?",
+  "expected": [
+   "docs/products/redis/reference/advanced-params.rst"
+  ],
+  "term": "redis_maxmemory_policy"
+ },
+ {
+  "id": "param-pg-idle-in-transaction",
+  "kind": "param",
+  "question": "Which PostgreSQL setting on Aiven terminates sessions that sit idle inside an open transaction?",
+  "expected": [
+   "docs/products/postgresql/reference/advanced-params.rst"
+  ],
+  "term": "idle_in_transaction_session_timeout"
+ },
+ {
+  "id": "param-kafka-auto-create-topics",
+  "kind": "param",
+  "question": "How do I make Aiven for Apache Kafka create topics automatically when a producer writes to them?",
+  "expected": [
+   "docs/products/kafka/howto/create-topics-automatically.rst",
+   "docs/products/kafka/reference/advanced-params.rst"
+  ],
+  "term": "auto_create_topics"
+ },
+ {
+  "id": "param-pg-statement-timeout",
+  "kind": "param",
+  "question": "How can I make PostgreSQL cancel any query that runs longer than 15 seconds?",
+  "expected": [
+   "docs/products/postgresql/howto/pg-long-running-queries.rst"
+  ],
+  "term": "statement_timeout"
+ },
+ {
+  "id": "param-opensearch-index-retention",
+  "kind": "param",
+  "question": "How do I set index retention patterns so old OpenSearch indices are deleted automatically?",
+  "expected": [
+   "docs/products/opensearch/howto/set_index_retention_patterns.rst"
+  ],
+  "term": "retention"
+ }
+]

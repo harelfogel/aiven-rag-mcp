@@ -3,9 +3,9 @@
 import pytest
 
 from rag_mcp.errors import Code
-from rag_mcp.repository import ChunkHit
 from rag_mcp.search import SearchConfig, SearchError, citation_url, fuse, validate_request
 from rag_mcp.settings import Settings
+from rag_mcp.storage.repository import ChunkHit
 
 CONFIG = SearchConfig.from_settings(Settings.from_env({"DATABASE_URL": "postgresql://x/y"}))
 
