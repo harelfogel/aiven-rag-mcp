@@ -24,7 +24,17 @@ class Settings:
     db_connect_timeout_s: float = 60.0
     embedding_model: str = "BAAI/bge-small-en-v1.5"
     embedding_dim: int = 384
+    chunk_target_tokens: int = 400
+    chunk_max_tokens: int = 512
+    chunk_min_tokens: int = 30
     log_level: str = "INFO"
+
+    def __post_init__(self) -> None:
+        if not self.chunk_min_tokens < self.chunk_target_tokens <= self.chunk_max_tokens:
+            raise SettingsError(
+                "need CHUNK_MIN_TOKENS < CHUNK_TARGET_TOKENS <= CHUNK_MAX_TOKENS, got "
+                f"{self.chunk_min_tokens} / {self.chunk_target_tokens} / {self.chunk_max_tokens}"
+            )
 
     @classmethod
     def from_env(cls, env: Mapping[str, str] | None = None) -> Settings:
@@ -37,6 +47,11 @@ class Settings:
             ),
             embedding_model=_text(env, "EMBEDDING_MODEL", cls.embedding_model),
             embedding_dim=_number(env, "EMBEDDING_DIM", cls.embedding_dim, int, minimum=1),
+            chunk_target_tokens=_number(
+                env, "CHUNK_TARGET_TOKENS", cls.chunk_target_tokens, int, minimum=1
+            ),
+            chunk_max_tokens=_number(env, "CHUNK_MAX_TOKENS", cls.chunk_max_tokens, int, minimum=1),
+            chunk_min_tokens=_number(env, "CHUNK_MIN_TOKENS", cls.chunk_min_tokens, int, minimum=0),
             log_level=_choice(env, "LOG_LEVEL", cls.log_level, _LOG_LEVELS),
         )
 

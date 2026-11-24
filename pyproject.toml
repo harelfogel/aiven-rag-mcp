@@ -43,4 +43,7 @@ files = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-markers = ["integration: needs a running Postgres (docker compose up -d db)"]
+markers = [
+    "integration: needs a running Postgres (docker compose up -d db)",
+    "slow: walks the whole devportal corpus",
+]
