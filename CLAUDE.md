@@ -52,4 +52,5 @@ docker compose exec server rag-mcp ingest /data/devportal
 
 ## Never commit
 
-The assignment PDF, the prep book, the private brief, `.env`, or `.claude/skills/explain-like-harel/`.
+The assignment PDF, the prep book, the private brief, `.env`, or the local-only skills
+`.claude/skills/explain-like-harel/` and `.claude/skills/requirements/`.

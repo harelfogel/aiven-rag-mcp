@@ -26,6 +26,7 @@ services:
       EMBEDDING_MODEL: ${EMBEDDING_MODEL:-BAAI/bge-small-en-v1.5}
       EMBEDDING_DIM: ${EMBEDDING_DIM:-384}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DATA_ROOT: /data
     volumes:
       - ./data:/data:ro
 

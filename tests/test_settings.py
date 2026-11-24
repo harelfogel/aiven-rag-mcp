@@ -42,3 +42,11 @@ def test_log_level_is_normalized_and_validated() -> None:
     assert Settings.from_env({**BASE, "LOG_LEVEL": "debug"}).log_level == "DEBUG"
     with pytest.raises(SettingsError, match="LOG_LEVEL"):
         Settings.from_env({**BASE, "LOG_LEVEL": "loud"})
+
+
+def test_loader_settings_defaults_and_validation() -> None:
+    s = Settings.from_env(BASE)
+    assert (s.data_root, s.ingest_max_bytes, s.url_max_redirects) == ("/data", 5_000_000, 3)
+    assert Settings.from_env({**BASE, "URL_MAX_REDIRECTS": "0"}).url_max_redirects == 0
+    with pytest.raises(SettingsError, match="INGEST_MAX_BYTES"):
+        Settings.from_env({**BASE, "INGEST_MAX_BYTES": "0"})

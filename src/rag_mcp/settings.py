@@ -27,6 +27,10 @@ class Settings:
     chunk_target_tokens: int = 400
     chunk_max_tokens: int = 512
     chunk_min_tokens: int = 30
+    data_root: str = "/data"
+    ingest_max_bytes: int = 5_000_000
+    url_timeout_s: float = 10.0
+    url_max_redirects: int = 3
     log_level: str = "INFO"
 
     def __post_init__(self) -> None:
@@ -52,6 +56,12 @@ class Settings:
             ),
             chunk_max_tokens=_number(env, "CHUNK_MAX_TOKENS", cls.chunk_max_tokens, int, minimum=1),
             chunk_min_tokens=_number(env, "CHUNK_MIN_TOKENS", cls.chunk_min_tokens, int, minimum=0),
+            data_root=_text(env, "DATA_ROOT", cls.data_root),
+            ingest_max_bytes=_number(env, "INGEST_MAX_BYTES", cls.ingest_max_bytes, int, minimum=1),
+            url_timeout_s=_number(env, "URL_TIMEOUT_S", cls.url_timeout_s, float, minimum=1),
+            url_max_redirects=_number(
+                env, "URL_MAX_REDIRECTS", cls.url_max_redirects, int, minimum=0
+            ),
             log_level=_choice(env, "LOG_LEVEL", cls.log_level, _LOG_LEVELS),
         )
 
