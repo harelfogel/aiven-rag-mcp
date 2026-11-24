@@ -160,6 +160,9 @@ JOIN sources s ON s.id = n.source_id
 ORDER BY n.distance, n.id
 """
 
+
+# websearch_to_tsquery requires every word to match and never raises on punctuation. An OR variant
+# (any word may match) was measured on the golden set and rejected: see ADR 006.
 KEYWORD_SQL = """
 SELECT c.id, s.uri, s.title, c.heading_path, left(c.text, %s)
 FROM chunks c

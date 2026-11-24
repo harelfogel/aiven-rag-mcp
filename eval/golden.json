@@ -1,0 +1,457 @@
+[
+ {
+  "id": "param-kafka-connect-private",
+  "kind": "param",
+  "question": "What does the kafka_connect option under private_access do on Aiven for Apache Kafka?",
+  "expected": [
+   "docs/products/kafka/reference/advanced-params.rst",
+   "docs/products/kafka/kafka-connect/reference/advanced-params.rst"
+  ],
+  "term": "kafka_connect"
+ },
+ {
+  "id": "param-kafka-message-max-bytes",
+  "kind": "param",
+  "question": "What is message_max_bytes in the Kafka advanced configuration?",
+  "expected": [
+   "docs/products/kafka/reference/advanced-params.rst"
+  ],
+  "term": "message_max_bytes"
+ },
+ {
+  "id": "param-kafka-log-retention-hours",
+  "kind": "param",
+  "question": "Which Kafka advanced parameter sets the number of hours to keep a log file before deleting it?",
+  "expected": [
+   "docs/products/kafka/reference/advanced-params.rst"
+  ],
+  "term": "log_retention_hours"
+ },
+ {
+  "id": "param-redis-maxmemory-policy",
+  "kind": "param",
+  "question": "How do I set the Redis maxmemory policy on Aiven?",
+  "expected": [
+   "docs/products/redis/reference/advanced-params.rst"
+  ],
+  "term": "redis_maxmemory_policy"
+ },
+ {
+  "id": "param-pg-idle-in-transaction",
+  "kind": "param",
+  "question": "Which PostgreSQL setting on Aiven terminates sessions that sit idle inside an open transaction?",
+  "expected": [
+   "docs/products/postgresql/reference/advanced-params.rst"
+  ],
+  "term": "idle_in_transaction_session_timeout"
+ },
+ {
+  "id": "param-kafka-auto-create-topics",
+  "kind": "param",
+  "question": "How do I make Aiven for Apache Kafka create topics automatically when a producer writes to them?",
+  "expected": [
+   "docs/products/kafka/howto/create-topics-automatically.rst",
+   "docs/products/kafka/reference/advanced-params.rst"
+  ],
+  "term": "auto_create_topics"
+ },
+ {
+  "id": "param-pg-statement-timeout",
+  "kind": "param",
+  "question": "How can I make PostgreSQL cancel any query that runs longer than 15 seconds?",
+  "expected": [
+   "docs/products/postgresql/howto/pg-long-running-queries.rst"
+  ],
+  "term": "statement_timeout"
+ },
+ {
+  "id": "param-opensearch-index-retention",
+  "kind": "param",
+  "question": "How do I set index retention patterns so old OpenSearch indices are deleted automatically?",
+  "expected": [
+   "docs/products/opensearch/howto/set_index_retention_patterns.rst"
+  ],
+  "term": "retention"
+ },
+ {
+  "id": "limit-pg-connections-plan",
+  "kind": "limit",
+  "question": "What is the maximum number of connections for an Aiven for PostgreSQL service on a 4 GB plan?",
+  "expected": [
+   "docs/products/postgresql/reference/pg-connection-limits.rst"
+  ],
+  "term": "max_connections"
+ },
+ {
+  "id": "limit-mysql-connections",
+  "kind": "limit",
+  "question": "How many connections does an Aiven for MySQL service allow and how does it depend on RAM?",
+  "expected": [
+   "docs/products/mysql/concepts/max-number-of-connections.rst"
+  ],
+  "term": "max_connections"
+ },
+ {
+  "id": "limit-redis-connections",
+  "kind": "limit",
+  "question": "How do I estimate the maximum number of connections my Aiven for Redis service supports?",
+  "expected": [
+   "docs/products/redis/howto/estimate-max-number-of-connections.rst"
+  ],
+  "term": "connections"
+ },
+ {
+  "id": "limit-backup-retention",
+  "kind": "limit",
+  "question": "How long are backups kept for each Aiven service type?",
+  "expected": [
+   "docs/platform/concepts/service_backups.rst"
+  ],
+  "term": "backup"
+ },
+ {
+  "id": "limit-clickhouse",
+  "kind": "limit",
+  "question": "What are the known limitations of Aiven for ClickHouse?",
+  "expected": [
+   "docs/products/clickhouse/reference/limitations.rst"
+  ],
+  "term": "limitation"
+ },
+ {
+  "id": "limit-pg-idle-connections",
+  "kind": "limit",
+  "question": "What happens to idle connections in Aiven for PostgreSQL and after how long are they closed?",
+  "expected": [
+   "docs/products/postgresql/reference/idle-connections.rst"
+  ],
+  "term": "idle"
+ },
+ {
+  "id": "limit-oom",
+  "kind": "limit",
+  "question": "What happens when an Aiven service runs out of memory?",
+  "expected": [
+   "docs/platform/concepts/out-of-memory-conditions.rst",
+   "docs/platform/concepts/service-memory-limits.rst"
+  ],
+  "term": "memory"
+ },
+ {
+  "id": "limit-kafka-full-disk",
+  "kind": "limit",
+  "question": "What happens to an Aiven for Apache Kafka service when its disk fills up and how do I prevent it?",
+  "expected": [
+   "docs/products/kafka/howto/prevent-full-disks.rst"
+  ],
+  "term": "disk"
+ },
+ {
+  "id": "howto-kafka-cli-topic-retention",
+  "kind": "howto",
+  "question": "Using kafka-topics.sh, how do I create a topic with a retention time of 30 minutes?",
+  "expected": [
+   "docs/products/kafka/howto/configure-with-kafka-cli.rst"
+  ],
+  "term": "retention.ms"
+ },
+ {
+  "id": "howto-kafka-change-retention",
+  "kind": "howto",
+  "question": "How do I change the data retention period of a Kafka topic in the Aiven Console?",
+  "expected": [
+   "docs/products/kafka/howto/change-retention-period.rst"
+  ],
+  "term": "retention"
+ },
+ {
+  "id": "howto-pg-read-replica",
+  "kind": "howto",
+  "question": "How do I create a read-only replica for my PostgreSQL service?",
+  "expected": [
+   "docs/products/postgresql/howto/create-read-replica.rst"
+  ],
+  "term": "replica"
+ },
+ {
+  "id": "howto-ca-cert",
+  "kind": "howto",
+  "question": "Where do I download the CA certificate for my Aiven service?",
+  "expected": [
+   "docs/platform/howto/download-ca-cert.rst"
+  ],
+  "term": "CA certificate"
+ },
+ {
+  "id": "howto-auth-token",
+  "kind": "howto",
+  "question": "How do I create an authentication token for the Aiven API?",
+  "expected": [
+   "docs/platform/howto/create_authentication_token.rst"
+  ],
+  "term": "token"
+ },
+ {
+  "id": "howto-add-storage",
+  "kind": "howto",
+  "question": "How do I add more disk space to a running Aiven service without changing plan?",
+  "expected": [
+   "docs/platform/howto/add-storage-space.rst"
+  ],
+  "term": "storage"
+ },
+ {
+  "id": "howto-kafka-acls",
+  "kind": "howto",
+  "question": "How do I manage access control lists for Kafka topics on Aiven?",
+  "expected": [
+   "docs/products/kafka/howto/manage-acls.rst"
+  ],
+  "term": "ACL"
+ },
+ {
+  "id": "howto-kafka-sasl",
+  "kind": "howto",
+  "question": "How do I enable SASL authentication for Aiven for Apache Kafka?",
+  "expected": [
+   "docs/products/kafka/howto/kafka-sasl-auth.rst"
+  ],
+  "term": "SASL"
+ },
+ {
+  "id": "howto-pg-extensions",
+  "kind": "howto",
+  "question": "How do I install a PostgreSQL extension on an Aiven service?",
+  "expected": [
+   "docs/products/postgresql/howto/manage-extensions.rst"
+  ],
+  "term": "extension"
+ },
+ {
+  "id": "howto-pg-dump-restore",
+  "kind": "howto",
+  "question": "How do I migrate a database to Aiven for PostgreSQL with pg_dump and pg_restore?",
+  "expected": [
+   "docs/products/postgresql/howto/migrate-pg-dump-restore.rst"
+  ],
+  "term": "pg_dump"
+ },
+ {
+  "id": "howto-kcat",
+  "kind": "howto",
+  "question": "How do I use kcat to produce and consume messages from my Aiven Kafka service?",
+  "expected": [
+   "docs/products/kafka/howto/kcat.rst"
+  ],
+  "term": "kcat"
+ },
+ {
+  "id": "howto-clickhouse-cli",
+  "kind": "howto",
+  "question": "How do I connect to Aiven for ClickHouse with the clickhouse-client command line tool?",
+  "expected": [
+   "docs/products/clickhouse/howto/connect-with-clickhouse-cli.rst"
+  ],
+  "term": "clickhouse"
+ },
+ {
+  "id": "howto-opensearch-low-disk",
+  "kind": "howto",
+  "question": "My OpenSearch service is low on disk space, what should I do?",
+  "expected": [
+   "docs/products/opensearch/howto/handle-low-disk-space.rst"
+  ],
+  "term": "disk"
+ },
+ {
+  "id": "howto-keystore",
+  "kind": "howto",
+  "question": "How do I create a Java keystore and truststore for connecting to Aiven for Apache Kafka?",
+  "expected": [
+   "docs/products/kafka/howto/keystore-truststore.rst"
+  ],
+  "term": "keystore"
+ },
+ {
+  "id": "howto-pg-slow-queries",
+  "kind": "howto",
+  "question": "How do I find slow queries in Aiven for PostgreSQL using pg_stat_statements?",
+  "expected": [
+   "docs/products/postgresql/howto/identify-pg-slow-queries.rst"
+  ],
+  "term": "pg_stat_statements"
+ },
+ {
+  "id": "howto-flink-sql-app",
+  "kind": "howto",
+  "question": "How do I create a SQL application in Aiven for Apache Flink?",
+  "expected": [
+   "docs/products/flink/howto/create-sql-application.rst"
+  ],
+  "term": "SQL"
+ },
+ {
+  "id": "howto-disk-autoscaler",
+  "kind": "howto",
+  "question": "How do I enable automatic disk autoscaling for an Aiven service?",
+  "expected": [
+   "docs/platform/howto/disk-autoscaler.rst"
+  ],
+  "term": "autoscal"
+ },
+ {
+  "id": "howto-redis-overcommit",
+  "kind": "howto",
+  "question": "Why does Aiven for Redis warn about overcommit_memory and what should I do about it?",
+  "expected": [
+   "docs/products/redis/howto/warning-overcommit_memory.rst"
+  ],
+  "term": "overcommit"
+ },
+ {
+  "id": "ident-message-max-bytes",
+  "kind": "identifier",
+  "question": "message_max_bytes",
+  "expected": [
+   "docs/products/kafka/reference/advanced-params.rst"
+  ],
+  "term": "message_max_bytes"
+ },
+ {
+  "id": "ident-log-retention-hours",
+  "kind": "identifier",
+  "question": "log_retention_hours",
+  "expected": [
+   "docs/products/kafka/reference/advanced-params.rst"
+  ],
+  "term": "log_retention_hours"
+ },
+ {
+  "id": "ident-redis-maxmemory",
+  "kind": "identifier",
+  "question": "redis_maxmemory_policy",
+  "expected": [
+   "docs/products/redis/reference/advanced-params.rst"
+  ],
+  "term": "redis_maxmemory_policy"
+ },
+ {
+  "id": "ident-idle-in-transaction",
+  "kind": "identifier",
+  "question": "idle_in_transaction_session_timeout",
+  "expected": [
+   "docs/products/postgresql/reference/advanced-params.rst"
+  ],
+  "term": "idle_in_transaction_session_timeout"
+ },
+ {
+  "id": "ident-retention-ms",
+  "kind": "identifier",
+  "question": "retention.ms kafka-topics.sh",
+  "expected": [
+   "docs/products/kafka/howto/configure-with-kafka-cli.rst"
+  ],
+  "term": "retention.ms"
+ },
+ {
+  "id": "ident-pg-stat-statements",
+  "kind": "identifier",
+  "question": "pg_stat_statements",
+  "expected": [
+   "docs/products/postgresql/howto/identify-pg-slow-queries.rst",
+   "docs/products/postgresql/howto/optimize-pg-slow-queries.rst"
+  ],
+  "term": "pg_stat_statements"
+ },
+ {
+  "id": "ident-statement-timeout",
+  "kind": "identifier",
+  "question": "statement_timeout",
+  "expected": [
+   "docs/products/postgresql/howto/pg-long-running-queries.rst"
+  ],
+  "term": "statement_timeout"
+ },
+ {
+  "id": "ident-overcommit-memory",
+  "kind": "identifier",
+  "question": "overcommit_memory",
+  "expected": [
+   "docs/products/redis/howto/warning-overcommit_memory.rst"
+  ],
+  "term": "overcommit"
+ },
+ {
+  "id": "ident-kafka-connect-private-access",
+  "kind": "identifier",
+  "question": "private_access kafka_connect",
+  "expected": [
+   "docs/products/kafka/reference/advanced-params.rst",
+   "docs/products/kafka/kafka-connect/reference/advanced-params.rst"
+  ],
+  "term": "kafka_connect"
+ },
+ {
+  "id": "ident-max-connections-pg",
+  "kind": "identifier",
+  "question": "max_connections postgresql plan",
+  "expected": [
+   "docs/products/postgresql/reference/pg-connection-limits.rst"
+  ],
+  "term": "max_connections"
+ },
+ {
+  "id": "error-not-leader-for-partition",
+  "kind": "error",
+  "question": "NotLeaderForPartitionException error in produce request",
+  "expected": [
+   "docs/products/kafka/concepts/non-leader-for-partition.rst"
+  ],
+  "term": "NotLeaderForPartitionException"
+ },
+ {
+  "id": "error-failed-to-update-metadata",
+  "kind": "error",
+  "question": "Failed to update metadata after 60.0 secs",
+  "expected": [
+   "docs/products/kafka/howto/create-topics-automatically.rst"
+  ],
+  "term": "Failed to update metadata"
+ },
+ {
+  "id": "error-replication-slot-active",
+  "kind": "error",
+  "question": "ERROR: replication slot is active for PID",
+  "expected": [
+   "docs/products/kafka/kafka-connect/howto/debezium-source-connector-pg-node-replacement.rst"
+  ],
+  "term": "is active for PID"
+ },
+ {
+  "id": "error-superuser-publication",
+  "kind": "error",
+  "question": "must be superuser to create FOR ALL TABLES publication",
+  "expected": [
+   "docs/products/kafka/kafka-connect/howto/debezium-source-connector-pg.rst"
+  ],
+  "term": "FOR ALL TABLES publication"
+ },
+ {
+  "id": "error-owner-of-extension",
+  "kind": "error",
+  "question": "ERROR: must be owner of extension",
+  "expected": [
+   "docs/products/postgresql/howto/migrate-pg-dump-restore.rst"
+  ],
+  "term": "must be owner of extension"
+ },
+ {
+  "id": "error-member-of-role-terminated",
+  "kind": "error",
+  "question": "must be a member of the role whose process is being terminated or member of pg_signal_backend",
+  "expected": [
+   "docs/products/postgresql/howto/pg-long-running-queries.rst"
+  ],
+  "term": "pg_signal_backend"
+ }
+]

@@ -111,7 +111,10 @@ def _candidate_lists(
         if mode is not SearchMode.VECTOR:
             rankings.append(
                 repository.keyword_candidates(
-                    conn, query, limit=config.candidates, text_chars=config.text_chars
+                    conn,
+                    query,
+                    limit=config.candidates,
+                    text_chars=config.text_chars,
                 )
             )
     return rankings
@@ -139,6 +142,7 @@ def fuse(rankings: Sequence[Sequence[ChunkHit]], k: int) -> list[tuple[ChunkHit,
 
     Only ranks are used, so a cosine distance and a keyword score never have to share a scale.
     Ties break on the best rank any list gave the chunk, then on id, so output is deterministic.
+    Weighting the keyword list (0.5, 0.3) was measured and changed nothing: ADR 006.
     """
     scores: dict[int, float] = {}
     best_rank: dict[int, int] = {}

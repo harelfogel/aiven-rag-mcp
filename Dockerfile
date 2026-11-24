@@ -25,6 +25,7 @@ WORKDIR /app
 COPY --from=builder --chown=app:app /app/.venv ./.venv
 COPY --from=builder --chown=app:app /app/models ./models
 COPY --from=builder --chown=app:app /app/src ./src
+COPY --chown=app:app eval ./eval
 USER app
 ENV PATH="/app/.venv/bin:$PATH" \
     EMBEDDING_CACHE_DIR=/app/models \

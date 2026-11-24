@@ -17,10 +17,12 @@ from pathlib import Path
 import psycopg
 from psycopg_pool import ConnectionPool, PoolTimeout
 
-from rag_mcp import db
+from rag_mcp import db, repository
 from rag_mcp.embedding import FastEmbedEmbedder
 from rag_mcp.errors import RagError
+from rag_mcp.evaluate import evaluate, load_golden, render_markdown
 from rag_mcp.ingest import IngestPipeline, ingest_tree
+from rag_mcp.search import SearchConfig
 from rag_mcp.settings import Settings, SettingsError
 from rag_mcp.tools import build_server
 
@@ -33,6 +35,9 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("up", help="apply the schema, then idle for `docker exec`")
     sub.add_parser("init-db", help="apply the schema and exit")
     sub.add_parser("serve", help="run the MCP server on stdio (launched by Claude Code)")
+    evaluation = sub.add_parser("eval", help="score retrieval on a golden set; markdown to stdout")
+    evaluation.add_argument("golden", type=Path, nargs="?", default=Path("eval/golden.json"))
+    evaluation.add_argument("--repeats", type=int, default=3, help="timing runs per question")
     ingest = sub.add_parser(
         "ingest", help="ingest every .rst/.md under PATH (inside the data root)"
     )
@@ -63,6 +68,8 @@ def main(argv: list[str] | None = None) -> int:
         exit_code = _ingest(settings, pool, args.path)
     elif args.command == "serve":
         exit_code = _serve(settings, pool)
+    elif args.command == "eval":
+        exit_code = _eval(settings, pool, args.golden, args.repeats)
     pool.close()
     return exit_code
 
@@ -90,6 +97,27 @@ def _serve(settings: Settings, pool: ConnectionPool) -> int:
         return 1
     log.info("MCP server ready on stdio")
     build_server(settings, pool, embedder).run()
+    return 0
+
+
+def _eval(settings: Settings, pool: ConnectionPool, golden_path: Path, repeats: int) -> int:
+    try:
+        golden = load_golden(golden_path, f"file:{settings.source_path_prefix}")
+        embedder = FastEmbedEmbedder.from_settings(settings)
+        reports = evaluate(
+            pool, embedder, golden, SearchConfig.from_settings(settings), repeats=repeats
+        )
+    except RagError as error:
+        log.error("%s", error)
+        return 1
+    with pool.connection() as conn:
+        _, chunk_count = repository.count_sources(conn)
+    for report in reports:
+        log.info(
+            "%s: recall@5 %.2f, mrr %.2f", report.variant.label, report.recall_at_5, report.mrr
+        )
+    # This is a report for a person, not the MCP channel: `eval` never runs under `serve`.
+    sys.stdout.write(render_markdown(reports, chunk_count=chunk_count, repeats=repeats))
     return 0
 
 
