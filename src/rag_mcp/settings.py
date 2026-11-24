@@ -29,7 +29,19 @@ class Settings:
     chunk_target_tokens: int = 400
     chunk_max_tokens: int = 512
     chunk_min_tokens: int = 30
+    search_default_top_k: int = 5
+    search_max_top_k: int = 20
+    search_candidates: int = 20  # per ranked list, before fusion
+    rrf_k: int = 60  # the damping constant from the RRF paper
+    hnsw_ef_search: int = 100  # recall vs speed; must be >= search_candidates
+    search_text_chars: int = 1200  # per result, cut in SQL so long chunks never cross the wire
+    query_max_chars: int = 1000
+    list_sources_default: int = 25
+    list_sources_max: int = 100
+    source_url_base: str = "https://github.com/aiven/devportal/blob/main/"
+    source_path_prefix: str = "devportal/"  # stripped from a file uri to get the repo path
     data_root: str = "/data"
+    ready_file: str = "/tmp/rag-mcp.ready"  # created once the idle process is warm; healthcheck
     ingest_max_bytes: int = 5_000_000
     url_timeout_s: float = 10.0
     url_max_redirects: int = 3
@@ -41,6 +53,23 @@ class Settings:
                 "need CHUNK_MIN_TOKENS < CHUNK_TARGET_TOKENS <= CHUNK_MAX_TOKENS, got "
                 f"{self.chunk_min_tokens} / {self.chunk_target_tokens} / {self.chunk_max_tokens}"
             )
+        self._check_search_limits()
+
+    def _check_search_limits(self) -> None:
+        """Relations that keep search honest: a full page must be fillable from one list, and the
+        index must be allowed to return as many rows as we ask it for."""
+        if not self.search_default_top_k <= self.search_max_top_k <= self.search_candidates:
+            raise SettingsError(
+                "need SEARCH_DEFAULT_TOP_K <= SEARCH_MAX_TOP_K <= SEARCH_CANDIDATES, got "
+                f"{self.search_default_top_k} / {self.search_max_top_k} / {self.search_candidates}"
+            )
+        if self.search_candidates > self.hnsw_ef_search:
+            raise SettingsError(
+                f"HNSW_EF_SEARCH ({self.hnsw_ef_search}) must be >= SEARCH_CANDIDATES "
+                f"({self.search_candidates}): the index returns at most ef_search rows"
+            )
+        if self.list_sources_default > self.list_sources_max:
+            raise SettingsError("LIST_SOURCES_DEFAULT must be <= LIST_SOURCES_MAX")
 
     @classmethod
     def from_env(cls, env: Mapping[str, str] | None = None) -> Settings:
@@ -60,7 +89,27 @@ class Settings:
             ),
             chunk_max_tokens=_number(env, "CHUNK_MAX_TOKENS", cls.chunk_max_tokens, int, minimum=1),
             chunk_min_tokens=_number(env, "CHUNK_MIN_TOKENS", cls.chunk_min_tokens, int, minimum=0),
+            search_default_top_k=_number(
+                env, "SEARCH_DEFAULT_TOP_K", cls.search_default_top_k, int, minimum=1
+            ),
+            search_max_top_k=_number(env, "SEARCH_MAX_TOP_K", cls.search_max_top_k, int, minimum=1),
+            search_candidates=_number(
+                env, "SEARCH_CANDIDATES", cls.search_candidates, int, minimum=1
+            ),
+            rrf_k=_number(env, "RRF_K", cls.rrf_k, int, minimum=1),
+            hnsw_ef_search=_number(env, "HNSW_EF_SEARCH", cls.hnsw_ef_search, int, minimum=1),
+            search_text_chars=_number(
+                env, "SEARCH_TEXT_CHARS", cls.search_text_chars, int, minimum=50
+            ),
+            query_max_chars=_number(env, "QUERY_MAX_CHARS", cls.query_max_chars, int, minimum=10),
+            list_sources_default=_number(
+                env, "LIST_SOURCES_DEFAULT", cls.list_sources_default, int, minimum=1
+            ),
+            list_sources_max=_number(env, "LIST_SOURCES_MAX", cls.list_sources_max, int, minimum=1),
+            source_url_base=_text(env, "SOURCE_URL_BASE", cls.source_url_base),
+            source_path_prefix=_text(env, "SOURCE_PATH_PREFIX", cls.source_path_prefix),
             data_root=_text(env, "DATA_ROOT", cls.data_root),
+            ready_file=_text(env, "READY_FILE", cls.ready_file),
             ingest_max_bytes=_number(env, "INGEST_MAX_BYTES", cls.ingest_max_bytes, int, minimum=1),
             url_timeout_s=_number(env, "URL_TIMEOUT_S", cls.url_timeout_s, float, minimum=1),
             url_max_redirects=_number(

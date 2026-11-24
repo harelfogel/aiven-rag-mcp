@@ -1,8 +1,9 @@
 """Command-line entrypoints.
 
 `up` is the container's main process: apply the schema, then idle. Claude Code starts the
-MCP server itself with `docker exec -i rag-mcp rag-mcp serve` (arrives in M5).
+MCP server itself with `docker exec -i rag-mcp rag-mcp serve`.
 `ingest PATH` walks a folder under the data root and reports what changed.
+`serve` runs the MCP server on stdio; stdout is the protocol, so everything else logs to stderr.
 """
 
 from __future__ import annotations
@@ -21,6 +22,7 @@ from rag_mcp.embedding import FastEmbedEmbedder
 from rag_mcp.errors import RagError
 from rag_mcp.ingest import IngestPipeline, ingest_tree
 from rag_mcp.settings import Settings, SettingsError
+from rag_mcp.tools import build_server
 
 log = logging.getLogger("rag_mcp")
 
@@ -30,6 +32,7 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("up", help="apply the schema, then idle for `docker exec`")
     sub.add_parser("init-db", help="apply the schema and exit")
+    sub.add_parser("serve", help="run the MCP server on stdio (launched by Claude Code)")
     ingest = sub.add_parser(
         "ingest", help="ingest every .rst/.md under PATH (inside the data root)"
     )
@@ -55,11 +58,39 @@ def main(argv: list[str] | None = None) -> int:
 
     exit_code = 0
     if args.command == "up":
-        _idle()
+        exit_code = _up(settings)
     elif args.command == "ingest":
         exit_code = _ingest(settings, pool, args.path)
+    elif args.command == "serve":
+        exit_code = _serve(settings, pool)
     pool.close()
     return exit_code
+
+
+def _up(settings: Settings) -> int:
+    """Warm the model so the first `docker exec ... serve` is fast, then signal readiness."""
+    ready_file = Path(settings.ready_file)
+    ready_file.unlink(missing_ok=True)  # a restarted container must not look ready before it is
+    try:
+        FastEmbedEmbedder.from_settings(settings).embed_query("warm up")
+    except RagError as error:
+        log.error("%s", error)
+        return 1
+    ready_file.touch()
+    _idle()
+    return 0
+
+
+def _serve(settings: Settings, pool: ConnectionPool) -> int:
+    embedder = FastEmbedEmbedder.from_settings(settings)
+    try:
+        embedder.embed_query("warm up")  # load the model now, not during the first question
+    except RagError as error:
+        log.error("%s", error)
+        return 1
+    log.info("MCP server ready on stdio")
+    build_server(settings, pool, embedder).run()
+    return 0
 
 
 def _ingest(settings: Settings, pool: ConnectionPool, path: Path) -> int:

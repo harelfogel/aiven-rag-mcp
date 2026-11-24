@@ -48,12 +48,21 @@ def find_source(conn: Connection[Any], uri: str) -> SourceRecord | None:
     return SourceRecord(*row) if row else None
 
 
-def list_sources(conn: Connection[Any]) -> list[SourceRecord]:
+def list_sources(conn: Connection[Any], *, limit: int, offset: int) -> list[SourceRecord]:
     rows = conn.execute(
         "SELECT id, uri, kind, title, content_hash, chunk_count, ingested_at"
-        " FROM sources ORDER BY ingested_at DESC, uri"
+        " FROM sources ORDER BY ingested_at DESC, uri LIMIT %s OFFSET %s",
+        (limit, offset),
     ).fetchall()
     return [SourceRecord(*row) for row in rows]
+
+
+def count_sources(conn: Connection[Any]) -> tuple[int, int]:
+    """(number of sources, number of chunks) in one pass."""
+    row = conn.execute("SELECT count(*), coalesce(sum(chunk_count), 0) FROM sources").fetchone()
+    if row is None:  # an aggregate always returns one row; anything else is a broken driver
+        raise RepositoryError(Code.INTERNAL, "count of sources returned no row")
+    return int(row[0]), int(row[1])
 
 
 def replace_source(
@@ -121,3 +130,66 @@ def _insert_chunks(conn: Connection[Any], source_id: int, chunks: Sequence[Chunk
 def vector_literal(values: Sequence[float]) -> str:
     """pgvector's text input form, so no extra adapter package is needed."""
     return "[" + ",".join(repr(float(value)) for value in values) + "]"
+
+
+# --- search candidates
+
+
+@dataclass(frozen=True)
+class ChunkHit:
+    chunk_id: int
+    source_uri: str
+    source_title: str
+    heading_path: str
+    text: str  # already cut to the configured length in SQL
+
+
+# Public so the integration tests can EXPLAIN exactly what runs.
+# `ORDER BY embedding <=> $1 LIMIT n` with the bare operator is the one shape the HNSW index can
+# serve (see database.md), so the nearest-neighbour scan sits in a subquery and the join to
+# `sources` happens on at most `n` rows afterwards.
+VECTOR_SQL = """
+SELECT n.id, s.uri, s.title, n.heading_path, n.text
+FROM (
+    SELECT id, source_id, heading_path, left(text, %s) AS text, embedding <=> %s::vector AS distance
+    FROM chunks
+    ORDER BY embedding <=> %s::vector
+    LIMIT %s
+) AS n
+JOIN sources s ON s.id = n.source_id
+ORDER BY n.distance, n.id
+"""
+
+KEYWORD_SQL = """
+SELECT c.id, s.uri, s.title, c.heading_path, left(c.text, %s)
+FROM chunks c
+JOIN sources s ON s.id = c.source_id
+WHERE c.tsv @@ websearch_to_tsquery('english', %s)
+ORDER BY ts_rank_cd(c.tsv, websearch_to_tsquery('english', %s)) DESC, c.id
+LIMIT %s
+"""
+
+
+def vector_candidates(
+    conn: Connection[Any],
+    embedding: Sequence[float],
+    *,
+    limit: int,
+    text_chars: int,
+    ef_search: int,
+) -> list[ChunkHit]:
+    """The `limit` chunks closest to `embedding` by cosine distance, nearest first."""
+    literal = vector_literal(embedding)
+    with conn.transaction():
+        # SET LOCAL takes no bind parameters; set_config(..., true) is its transaction-local twin.
+        conn.execute("SELECT set_config('hnsw.ef_search', %s::text, true)", (ef_search,))
+        rows = conn.execute(VECTOR_SQL, (text_chars, literal, literal, limit)).fetchall()
+    return [ChunkHit(*row) for row in rows]
+
+
+def keyword_candidates(
+    conn: Connection[Any], query: str, *, limit: int, text_chars: int
+) -> list[ChunkHit]:
+    """The `limit` chunks matching every word of `query`, best `ts_rank_cd` first."""
+    rows = conn.execute(KEYWORD_SQL, (text_chars, query, query, limit)).fetchall()
+    return [ChunkHit(*row) for row in rows]

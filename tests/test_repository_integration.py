@@ -88,18 +88,25 @@ def test_source_with_zero_chunks_is_recorded(pool: ConnectionPool) -> None:
     assert chunk_texts(pool, "file:nav.rst") == []
 
 
-def test_list_sources_newest_first(pool: ConnectionPool) -> None:
+def test_list_sources_is_newest_first_pages_and_counts(pool: ConnectionPool) -> None:
     with pool.connection() as conn:
-        for uri in ("first", "second"):
+        for uri in ("first", "second", "third"):
             repository.replace_source(
-                conn, uri=uri, kind="text", title=uri, content_hash=uri, chunks=rows("t")
+                conn, uri=uri, kind="text", title=uri, content_hash=uri, chunks=rows("a", "b")
             )
-        listed = repository.list_sources(conn)
-    assert [s.uri for s in listed][:2] == ["second", "first"] or [s.uri for s in listed][:2] == [
-        "first",
-        "second",
-    ]
-    assert {s.uri for s in listed} >= {"first", "second"}
+        everything = repository.list_sources(conn, limit=10, offset=0)
+        page = repository.list_sources(conn, limit=1, offset=1)
+        beyond = repository.list_sources(conn, limit=5, offset=3)
+        counts = repository.count_sources(conn)
+    assert [s.uri for s in everything] == ["third", "second", "first"]
+    assert [s.uri for s in page] == ["second"]
+    assert beyond == []
+    assert counts == (3, 6)
+
+
+def test_count_sources_of_an_empty_database(pool: ConnectionPool) -> None:
+    with pool.connection() as conn:
+        assert repository.count_sources(conn) == (0, 0)
 
 
 def test_vector_literal_round_trips_through_pgvector(pool: ConnectionPool) -> None:

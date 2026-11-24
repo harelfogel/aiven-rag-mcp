@@ -1,6 +1,7 @@
 import hashlib
 import os
 from collections.abc import Iterator, Sequence
+from contextlib import contextmanager
 from pathlib import Path
 
 import psycopg
@@ -62,18 +63,27 @@ def fake_embedder() -> FakeEmbedder:
     return FakeEmbedder()
 
 
+@contextmanager
+def throwaway_database(label: str) -> Iterator[str]:
+    """Create an empty database next to the configured one; drop it on exit. Yields its URL."""
+    base_url = os.environ.get("DATABASE_URL", "postgresql://rag:rag@localhost:5432/rag")
+    name = f"rag_{label}_{os.getpid()}"
+    with psycopg.connect(base_url, autocommit=True) as admin:
+        admin.execute(
+            sql.SQL("DROP DATABASE IF EXISTS {} WITH (FORCE)").format(sql.Identifier(name))
+        )
+        admin.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(name)))
+    try:
+        yield base_url.rsplit("/", 1)[0] + "/" + name
+    finally:
+        with psycopg.connect(base_url, autocommit=True) as admin:
+            admin.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(name)))
+
+
 @pytest.fixture(scope="session")
 def temp_database_url() -> Iterator[str]:
-    """A throwaway database next to the configured one, dropped at the end of the session."""
-    base_url = os.environ.get("DATABASE_URL", "postgresql://rag:rag@localhost:5432/rag")
-    name = f"rag_test_{os.getpid()}"
-    with psycopg.connect(base_url, autocommit=True) as admin:
-        admin.execute(sql.SQL("DROP DATABASE IF EXISTS {}").format(sql.Identifier(name)))
-        admin.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(name)))
-    url = base_url.rsplit("/", 1)[0] + "/" + name
-    yield url
-    with psycopg.connect(base_url, autocommit=True) as admin:
-        admin.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(name)))
+    with throwaway_database("test") as url:
+        yield url
 
 
 @pytest.fixture
@@ -98,3 +108,8 @@ def pool(test_settings: Settings) -> Iterator[ConnectionPool]:
         conn.execute("TRUNCATE sources CASCADE")
     yield pool
     pool.close()
+
+
+@pytest.fixture
+def anyio_backend() -> str:
+    return "asyncio"  # the MCP client and server are asyncio; trio is not installed

@@ -30,8 +30,14 @@ services:
       EMBEDDING_DIM: ${EMBEDDING_DIM:-384}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       DATA_ROOT: /data
+      READY_FILE: /tmp/rag-mcp.ready
     volumes:
       - ./data:/data:ro
+    healthcheck:   # healthy once the schema is applied and the model is loaded
+      test: ["CMD-SHELL", "test -f \"$$READY_FILE\""]
+      interval: 5s
+      timeout: 3s
+      retries: 30
 
 volumes:
   pgdata:

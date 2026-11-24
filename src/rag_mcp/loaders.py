@@ -60,6 +60,8 @@ Fetcher = Callable[[str, FetchLimits], HttpResponse]
 
 
 def load(kind: SourceKind, source: str, title: str | None, limits: LoadLimits) -> LoadedSource:
+    if title is not None and "\x00" in title:  # Postgres text cannot hold NUL
+        raise LoaderError(Code.BAD_REQUEST, "title contains a NUL character")
     match kind:
         case SourceKind.TEXT:
             return load_text(source, title, limits)

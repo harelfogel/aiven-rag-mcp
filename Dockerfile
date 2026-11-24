@@ -17,11 +17,14 @@ COPY src ./src
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
-# Stage 2: runtime only. One copy of /app, owned by a non-root user, no package manager.
+# Stage 2: runtime only, non-root. Dependencies and model are separate layers from the source, so a
+# code change rewrites a few hundred KB instead of the 500 MB that has to stay warm in the page cache.
 FROM python:3.12-slim
 RUN useradd --create-home --uid 1000 app
-COPY --from=builder --chown=app:app /app /app
 WORKDIR /app
+COPY --from=builder --chown=app:app /app/.venv ./.venv
+COPY --from=builder --chown=app:app /app/models ./models
+COPY --from=builder --chown=app:app /app/src ./src
 USER app
 ENV PATH="/app/.venv/bin:$PATH" \
     EMBEDDING_CACHE_DIR=/app/models \
