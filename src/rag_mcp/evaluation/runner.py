@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from psycopg_pool import ConnectionPool
 
 from rag_mcp.embedding import Embedder
-from rag_mcp.evaluation.golden import GoldenQuestion
+from rag_mcp.evaluation.golden_set import GoldenQuestion
 from rag_mcp.search import SearchConfig, SearchHit, SearchMode, search
 
 RECALL_AT = 5

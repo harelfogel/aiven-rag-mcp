@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from rag_mcp.evaluation.golden import GoldenError, GoldenQuestion, load_golden
+from rag_mcp.evaluation.golden_set import GoldenError, GoldenQuestion, load_golden
 from rag_mcp.evaluation.report import render_markdown
 from rag_mcp.evaluation.runner import Outcome, Report, Variant, percentile, rank_of
 from rag_mcp.search import SearchHit, SearchMode
@@ -76,7 +76,7 @@ def test_load_golden_builds_uris_and_rejects_bad_files(tmp_path: Path) -> None:
 
 
 def test_repo_golden_set_is_well_formed() -> None:
-    golden = load_golden(Path("eval/golden"), "file:devportal/")
+    golden = load_golden(Path("eval/golden_set"), "file:devportal/")
     assert len(golden) >= 25
     assert len({g.id for g in golden}) == len(golden)
     assert {g.kind for g in golden} == {"param", "limit", "howto", "identifier", "error"}
