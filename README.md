@@ -10,23 +10,52 @@ Local embeddings (bge-small, ONNX, CPU), PostgreSQL 17 with pgvector, one `docke
 You need Docker with Compose, and `git`. Nothing else: Python, the model and the database all live
 in the containers.
 
+**1. Get the code and the knowledge base** (15 s):
+
 ```bash
 git clone https://github.com/harelfogel/aiven-rag-mcp.git
 cd aiven-rag-mcp
-git clone --depth 1 https://github.com/aiven/devportal data/devportal   # the knowledge base, ~20 MB
-docker compose up -d --build --wait                                      # db + server; returns when both are healthy
-docker compose exec server rag-mcp ingest devportal/docs                 # embeds 788 pages into 3,807 chunks
+git clone --depth 1 https://github.com/aiven/devportal data/devportal   # ~20 MB of RST and Markdown
 ```
 
-What happens: the build installs the Python dependencies and downloads the embedding model into the
-image, so the first start needs no network. The server applies the database schema itself on every
-start (`src/rag_mcp/storage/schema.sql`, idempotent, under an advisory lock) and then waits for
-Claude to connect. The ingest command walks the folder, skips nothing it has already indexed, and
-prints a summary:
+**2. Build and start the database and the server** (about 3 minutes the first time):
+
+```bash
+docker compose up -d --build --wait
+```
+
+It returns when both containers report `Healthy`. The build installs the Python dependencies and
+bakes the embedding model into the image, so nothing is downloaded at run time. On start the server
+applies the database schema itself (`src/rag_mcp/storage/schema.sql`, idempotent, under an advisory
+lock), loads the model and waits for Claude. `docker compose logs server` ends with a
+`ready; idle until ...` line.
+
+**3. Ingest one product** (3 to 5 minutes), so you can ask questions right away:
+
+```bash
+docker compose exec server rag-mcp ingest devportal/docs/products/kafka
+```
 
 ```
-ingest done: 788 ingested, 0 unchanged, 0 failed, 3807 new chunks in 736.3s (5.2 chunks/s)
+ingest done: 171 ingested, 0 unchanged, 0 failed, 954 new chunks in ...
 ```
+
+**4. [Add it to Claude](#add-it-to-claude)** and ask a question, for example the one in the
+[example session](#example-session).
+
+**5. Ingest the rest** (optional, 9 to 12 minutes). Pages already indexed are skipped, and every
+page is searchable as soon as it is written:
+
+```bash
+docker compose exec server rag-mcp ingest devportal/docs
+```
+
+```
+ingest done: 617 ingested, 171 unchanged, 0 failed, 2853 new chunks in ...
+```
+
+The full ingest keeps every CPU core busy, so open new Claude sessions before or after it, not
+during it (see [Troubleshooting](#troubleshooting)).
 
 Measured on a 4-core Intel laptop, Docker Desktop with 8 GB, from an empty folder with the build
 cache cleared (2026-11-24):
@@ -36,17 +65,16 @@ cache cleared (2026-11-24):
 | `git clone` of this repo and of devportal | 15 s |
 | `docker compose up -d --build --wait`, first time | 2 min 50 s (134 s build incl. model download, 36 s start) |
 | ingest of one product, `devportal/docs/products/kafka` (171 pages, 954 chunks) | 5 min |
-| full ingest of `devportal/docs` (788 pages, 3,807 chunks) | 9 to 12 min of CPU inference |
+| full ingest of `devportal/docs` (788 pages, 3,807 chunks) | 12 min (736 s) |
 | second ingest run, nothing changed | 3 s |
 | server launch by Claude Code | 4 to 6 s |
 
-So the server answers its first question about 3 minutes after the clone, and about 8 minutes with
-one product ingested; the full corpus finishes in the background while you ask.
+A re-run on the development stack on 2026-11-25, with other work competing for the CPU, took 3 min
+for Kafka and 12 min 15 s (734.7 s) for the remaining 617 pages: expect 12 to 16 minutes for the
+whole corpus on a busy laptop.
 
-The server is usable as soon as it is healthy, and `ingest` is incremental, so start with one
-product if you want answers quickly:
-`docker compose exec server rag-mcp ingest devportal/docs/products/kafka`, then run the full
-command later; it skips what is already indexed.
+So the server is running in Claude about 3 minutes after the clone and answers questions about
+Kafka at about 8 minutes; the rest of the corpus fills in while you ask.
 
 ## Add it to Claude
 
@@ -73,8 +101,21 @@ asks once whether to trust it. **Claude Desktop** takes the same block in its
 
 `docker exec -i` starts one MCP process per Claude session inside the already running container,
 which keeps stdout clean for the protocol (`docker compose run` would print its own lines there).
-If a slow machine ever hits Claude Code's 30-second startup timeout, set `MCP_TIMEOUT=60000` in
-Claude Code's environment.
+
+Check that it is connected: `/mcp` in Claude Code lists `aiven-docs-rag` as connected, and asking
+Claude to "list the sources" returns the totals (171 sources and 954 chunks after step 3, 788 and
+3,807 after step 5).
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Claude Code says the server timed out on connect | the server took longer than Claude Code's 30 s startup limit, almost always because a full ingest is using every CPU core (measured during one: 15.5 s for `rag-mcp serve` to start and answer `initialize` instead of 4 to 6 s, and one Claude Code session timed out) | wait for the ingest to finish, then `/mcp` and reconnect; or start Claude Code with `MCP_TIMEOUT=60000 claude` |
+| `Error: No such container: rag-mcp` | the containers are not running | `docker compose up -d --wait` |
+| tools stop answering after `docker compose up` or a rebuild | the old MCP process belonged to the old container | `/mcp` in Claude Code and reconnect |
+| Claude's first `search` fails with `query: Field required`, then works | Claude Code loads tool schemas lazily and sometimes calls before reading them | nothing to do; the server rejects the empty call and the retry is correct |
+| answers about one product are fine, others come back off topic | that product is not ingested yet | ask Claude to list the sources, then ingest the folder you need |
+| `ingest` says `PATH must exist under the data root` | the path is relative to `./data`, which the container mounts as `/data` | use `devportal/docs/...`, not `data/devportal/...` |
 
 ## Example session
 
@@ -108,11 +149,7 @@ What a `search` result looks like to Claude, text trimmed:
       "score": 0.03028,
       "title": "Manage connection pooling",
       "heading_path": "Manage connection pooling > Manage connection pools",
-      "text": "To manage the connection pools, take the following steps:
-
-1. Log in to Aiven Console and select your Aiven for PostgreSQL service.
-
-2. In your service's page, [...]",
+      "text": "To manage the connection pools, take the following steps:\n\n1. Log in to Aiven Console and select your Aiven for PostgreSQL service.\n\n2. In your service's page, [...]",
       "source": "file:devportal/docs/products/postgresql/howto/manage-pool.rst",
       "url": "https://github.com/aiven/devportal/blob/main/docs/products/postgresql/howto/manage-pool.rst"
     }
@@ -254,8 +291,27 @@ Reproduce: `docker compose exec server rag-mcp eval` prints the same report.
 - **No similarity cut-off.** An off-topic question still gets its nearest neighbours; the tool
   description tells Claude to say so when nothing relevant comes back. A distance threshold tuned on
   the golden set is a small follow-up.
-- **Ingest is single-process CPU inference**, 12 minutes for the corpus. The per-source lock already
-  makes parallel workers safe; see the scaling section.
+- **Ingest is single-process CPU inference**, 12 minutes for the corpus. It is a one-time cost: a
+  re-run with nothing changed takes 3 seconds and a changed page re-embeds only that page. The
+  per-source lock already makes parallel workers safe; see the scaling section.
+- **Ingest and search share the CPU.** The model has no thread cap, so ONNX Runtime uses every core
+  during a full ingest: `rag-mcp serve` then took 15.5 s to start and answer `initialize` instead of
+  4 to 6 s, and one Claude Code session timed out at its 30 s limit. They are already separate processes; a thread would share the
+  same cores. Fix: an `EMBEDDING_THREADS` setting passed to the model so ingest leaves cores free,
+  and at scale a separate ingest worker.
+- **RST substitutions are not expanded.** A placeholder such as `|mysql_connections_per_<4G|`
+  reaches the index as raw text, so the numbers it stands for are missing from that MySQL page.
+  The corpus defines 18 of them, mostly in tables. Fix: expand them before parsing, like includes.
+- **At this size the vector query does not use its HNSW index.** With `HNSW_EF_SEARCH=100`, the
+  value the server sets, Postgres estimates the index as dearer than reading all 3,807 rows and
+  picks the full scan: 16 to 21 ms. With the default of 40 it picks the index: 1.3 to 1.6 ms
+  (`EXPLAIN ANALYZE`, three runs each, 2026-11-25; a real `search` call through the server raised
+  the table's sequential-scan count, not the index's). The scan is exact, so quality does not
+  suffer, and it is a small part of a 111 ms search. It also means the evaluation's recall was
+  measured on exact search; at 40 the search becomes approximate and recall must be re-measured. It does grow with the corpus, so before 10x: re-run
+  the eval with `HNSW_EF_SEARCH=40` and keep the lower value if recall holds. The `EXPLAIN` tests
+  prove the index can serve the query, not that the planner picks it. No index is missing: the
+  keyword query uses its GIN index in 0.5 ms.
 - **A parser or chunker change re-ingests everything** once `PIPELINE_VERSION` is bumped; there is
   no per-chunk diffing.
 - **DNS rebinding** between the SSRF check and the connect is not pinned. Fix: a custom connection
@@ -273,8 +329,9 @@ Numbers from this machine; the arithmetic is shown so it can be redone for anoth
 - **10x knowledge base** (about 38,000 chunks, 7 million tokens). Ingest is the bottleneck: 736 s
   today, so about 2 hours single-process. The fix is N embedding workers, one source each; the
   per-URI advisory lock already makes that safe, and Postgres writes are a few percent of the time.
-  Storage is trivial: 23 MB of chunks and 9 MB of indexes today, so about 320 MB. HNSW stays
-  sub-linear; `HNSW_EF_SEARCH` is the recall knob to re-tune with the eval, and `m` at build time.
+  Storage is trivial: 23 MB of chunks and 9 MB of indexes today, so about 320 MB. HNSW keeps the
+  vector query sub-linear once the planner chooses it, which today depends on `HNSW_EF_SEARCH` (see
+  Limits); that is the recall knob to re-tune with the eval, and `m` at build time.
   A reranker becomes more valuable as the candidate pool gets noisier.
 - **10x request volume.** The server is stateless; everything durable is in Postgres. Today one
   process answers a hybrid search in 111 ms median, of which the query embedding is most. Replicas
