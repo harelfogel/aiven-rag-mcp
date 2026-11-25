@@ -17,7 +17,13 @@ class Format(StrEnum):
     TEXT = "text"
 
 
-_EXTENSIONS = {".rst": Format.RST, ".md": Format.MARKDOWN, ".markdown": Format.MARKDOWN}
+_EXTENSIONS = {
+    ".rst": Format.RST,
+    ".md": Format.MARKDOWN,
+    ".markdown": Format.MARKDOWN,
+    ".txt": Format.TEXT,
+}
+FILE_EXTENSIONS = frozenset(_EXTENSIONS)
 
 
 def format_for_path(path: str | PurePath) -> Format:

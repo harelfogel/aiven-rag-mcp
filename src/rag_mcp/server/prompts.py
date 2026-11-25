@@ -43,10 +43,10 @@ TOOL_TEXT: dict[ToolName, ToolText] = {
     ToolName.INGEST: ToolText(
         "Add a document",
         "Add one document to the knowledge base. kind=text takes the text itself, kind=file takes "
-        "a path to a .rst or .md file inside the server's data folder, kind=url takes an http(s) "
-        "page that is plain text, Markdown, RST or HTML. Safe to repeat: unchanged content reports "
-        "'unchanged' and changed content replaces the earlier version. Returns the source id, how "
-        "many chunks it became and whether it was ingested or unchanged.",
+        "a path to a .rst, .md or .txt file inside the server's data folder, kind=url takes an "
+        "http(s) page that is plain text, Markdown, RST or HTML. Safe to repeat: unchanged content "
+        "reports 'unchanged' and changed content replaces the earlier version. Returns the source "
+        "id, how many chunks it became and whether it was ingested or unchanged.",
     ),
     ToolName.LIST_SOURCES: ToolText(
         "List ingested sources",

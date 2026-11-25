@@ -113,6 +113,12 @@ def test_load_file_missing_directory_and_extension(root: Path, limits: LoadLimit
         load_file("docs/image.png", None, limits)
 
 
+def test_load_file_plain_text_is_accepted_as_text(root: Path, limits: LoadLimits) -> None:
+    (root / "docs" / "notes.TXT").write_text("Max connections is 100.\n")
+    loaded = load_file("docs/notes.TXT", None, limits)
+    assert (loaded.uri, loaded.title, loaded.fmt) == ("file:docs/notes.TXT", "notes", Format.TEXT)
+
+
 def test_load_file_size_cap_and_bad_encoding(root: Path, limits: LoadLimits) -> None:
     (root / "docs" / "big.md").write_text("x" * 101)
     with pytest.raises(LoaderError) as error:

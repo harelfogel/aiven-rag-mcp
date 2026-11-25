@@ -37,8 +37,8 @@ Three tools over stdio: `ingest(source, kind, title)`, `search(query, top_k, mod
 
 - `kind="file"`: resolve the path and require it to stay under the configured data root
   (`Path.resolve()` then `is_relative_to`), reject symlinks that escape it, enforce a size cap,
-  and accept only the extensions `parsing.format_for_path` knows (`.rst`, `.md`, `.markdown`);
-  anything else is rejected rather than silently parsed as plain text.
+  and accept only `parsing.FILE_EXTENSIONS` (`.rst`, `.md`, `.markdown`, `.txt`); anything else
+  (PDF, Word, images) is rejected rather than silently parsed as plain text.
 - `kind="url"`: `https`/`http` only, DNS resolved and private/loopback/link-local ranges rejected
   (including after redirects), redirect count bounded, size cap, timeout from settings.
 - `kind="text"`: size cap, reject empty or non-UTF-8 input.

@@ -16,11 +16,12 @@ from urllib.parse import urlsplit
 from rag_mcp.errors import Code, RagError
 from rag_mcp.loading.fetching import FetchLimits, HttpResponse, fetch_url
 from rag_mcp.loading.html_text import html_to_text
-from rag_mcp.parsing import Format, format_for_path
+from rag_mcp.parsing import FILE_EXTENSIONS, Format, format_for_path
 from rag_mcp.settings import Settings
 
 _TITLE_CHARS = 80
 _TEXT_URI_HASH_CHARS = 12
+_ACCEPTED_EXTENSIONS = ", ".join(sorted(FILE_EXTENSIONS))
 
 
 class LoaderError(RagError):
@@ -88,9 +89,9 @@ def load_file(path_text: str, title: str | None, limits: LoadLimits) -> LoadedSo
         raise LoaderError(Code.NOT_FOUND, f"no such file under the data root: {path_text!r}")
     if path.is_dir():
         raise LoaderError(Code.BAD_REQUEST, f"{path_text!r} is a directory; give one file")
-    if (fmt := format_for_path(path)) is Format.TEXT:
+    if path.suffix.lower() not in FILE_EXTENSIONS:
         raise LoaderError(
-            Code.BAD_REQUEST, f"unsupported extension {path.suffix!r}; use .rst or .md"
+            Code.BAD_REQUEST, f"unsupported extension {path.suffix!r}; use {_ACCEPTED_EXTENSIONS}"
         )
     _check_size(path.stat().st_size, path_text, limits.max_bytes)
     try:
@@ -100,7 +101,9 @@ def load_file(path_text: str, title: str | None, limits: LoadLimits) -> LoadedSo
             Code.BAD_REQUEST, f"cannot read {path_text!r}: {error.strerror}"
         ) from error
     relative = PurePosixPath(path.relative_to(limits.data_root))
-    return LoadedSource(f"file:{relative}", title or path.stem, _decode(raw, path_text), fmt, path)
+    return LoadedSource(
+        f"file:{relative}", title or path.stem, _decode(raw, path_text), format_for_path(path), path
+    )
 
 
 def load_url(

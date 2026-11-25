@@ -117,6 +117,17 @@ Claude to "list the sources" returns the totals (171 sources and 954 chunks afte
 | answers about one product are fine, others come back off topic | that product is not ingested yet | ask Claude to list the sources, then ingest the folder you need |
 | `ingest` says `PATH must exist under the data root` | the path is relative to `./data`, which the container mounts as `/data` | use `devportal/docs/...`, not `data/devportal/...` |
 
+## Testing with your own documents
+
+Copy them into `./data/` next to this README. The folder is mounted live into the container as
+`/data`, so there is no restart. Then ask Claude, for example: "ingest the file my-doc.md" (a path
+relative to `./data`, or `/data/my-doc.md`). Pasted text and public URLs work too: "ingest this
+text: ...", "ingest https://...".
+
+Accepted files: `.md`, `.markdown`, `.rst` and `.txt`, up to 5 MB each. PDF and Word files are
+refused with `bad_request: unsupported extension`; convert them to text first. Ingesting the same
+file again after editing it replaces the old version.
+
 ## Example session
 
 A real `claude -p` run against this server (Claude Sonnet, three turns, about 8 cents):
@@ -279,6 +290,10 @@ Reproduce: `docker compose exec server rag-mcp eval` prints the same report.
 - The default database password is fine for a laptop: the port is bound to localhost only and the
   image contains no credentials.
 - One Postgres container and one server process, as the assignment allows.
+- English only: the embedding model is English (`bge-small-en`) and keyword search uses Postgres's
+  `english` text-search configuration. Other languages would need a multilingual model such as
+  `multilingual-e5-small` and the `simple` configuration.
+- PDF and Word files are out of scope. A PDF loader (pypdf) would feed the same parser and chunker.
 
 ## Limits, and what I would do next
 
@@ -312,6 +327,9 @@ Reproduce: `docker compose exec server rag-mcp eval` prints the same report.
   the eval with `HNSW_EF_SEARCH=40` and keep the lower value if recall holds. The `EXPLAIN` tests
   prove the index can serve the query, not that the planner picks it. No index is missing: the
   keyword query uses its GIN index in 0.5 ms.
+- **A page deleted from the source stays indexed.** The three tools have no remove, so a page that
+  disappears from devportal keeps its chunks until the volume is reset. Fix: when `ingest` walks a
+  folder, delete in one transaction the sources under that folder the walk did not see.
 - **A parser or chunker change re-ingests everything** once `PIPELINE_VERSION` is bumped; there is
   no per-chunk diffing.
 - **DNS rebinding** between the SSRF check and the connect is not pinned. Fix: a custom connection

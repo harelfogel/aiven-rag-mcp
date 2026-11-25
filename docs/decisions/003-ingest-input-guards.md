@@ -15,7 +15,7 @@ a file loader is a file reader for the whole container unless it is confined to 
 Option 2. Each redirect hop is resolved and checked before we connect; `ip.is_global` plus a
 multicast check covers loopback, private, link-local, cloud metadata, CGNAT and unspecified
 ranges without a hand-kept list. File paths are resolved (symlinks included) and must stay under
-`DATA_ROOT`; only `.rst` and `.md` are accepted. One size cap (`INGEST_MAX_BYTES`) applies to
+`DATA_ROOT`; only `.rst`, `.md`, `.markdown` and `.txt` are accepted. One size cap (`INGEST_MAX_BYTES`) applies to
 all three inputs and is checked before the body is read where a server declares it.
 
 ## Consequences
